@@ -1,0 +1,25 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background: rgb(34, 10, 10);
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+}
+  
+#globe {
+    cursor: pointer; 
+}
+  
+#current {
+    /* position: absolute; */
+    font-size: 55px;
+    color: white;
+    font-family: sans-serif;
+    margin-left: 4%;
+    margin-top: 4%;
+}
+  
