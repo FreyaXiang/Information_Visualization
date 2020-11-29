@@ -5,18 +5,18 @@ html, body {
 }
 
 .container {
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
     padding-top: 20px;
 }
   
 #globe {
     cursor: pointer; 
+    margin: auto;
 }
   
 #current {
-    /* position: absolute; */
-    font-size: 55px;
+    position: absolute;
     color: white;
     font-family: sans-serif;
     margin-left: 4%;
