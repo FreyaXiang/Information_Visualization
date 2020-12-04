@@ -1,0 +1,174 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background: white;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    /* padding-top: 20px; */
+}
+
+#globe {
+    cursor: pointer; 
+    margin: auto;
+}
+  
+#current {
+    position: absolute;
+    color: black;
+    font-family: sans-serif;
+    margin-left: 4%;
+    margin-top: 4%;
+}
+
+/*  */
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    opacity: 0;
+    width: 80px;
+    height: 28px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: rgb(243, 239, 22);
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    color: salmon;
+  }
+  
+  body {
+    font-size:1em;
+    font-family: sans-serif;
+  }
+  
+  h2 {
+    color: darkslategrey;
+    font-size: 2em;
+  }
+  
+  h1{
+    color: black;
+    font-size: 3em;
+  }
+  
+  svg {
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  .bar {
+    fill: steelblue;
+  }
+  
+  .point{
+    fill: lightcoral;
+  }
+  
+  .line {
+    fill: none;
+    stroke: crimson;
+    stroke-width: 1px;
+  }
+  
+  .y-label{
+    color: crimson;
+    font-size: 2em;
+  }
+  
+  
+  .x-axis {
+    font-style:italic;
+    color: darkslateblue;
+    
+  }
+  .y-axis {
+    font-style: italic;
+    color: darkslateblue;
+  }
+  
+  .y-axis path{
+    stroke-width: 2px;
+  }
+  
+  
+  
+  input[type=radio] {
+    position: absolute;
+    visibility: hidden;
+    display: none;
+  }
+  
+  label {
+    color: rgb(90, 19, 19);
+    display: inline-block;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 5px 10px;
+  }
+  
+  input[type="radio"]:checked + label{
+    color: white;
+    background: rgb(160, 100, 100);
+  }
+  
+  label + input[type="radio"] + label {
+    border-left: solid 3px rgb(160, 100, 100);
+  }
+  .radio-group {
+    border: solid 3px rgb(160, 100, 100);
+    display: inline-block;
+    margin: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .dropbtn {
+    background-color: #3498DB;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* Dropdown button on hover & focus */
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: salmon;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #ddd}
+  
+  /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+  .show {display:block;}
+  
+  
+  
