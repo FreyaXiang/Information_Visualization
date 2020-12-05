@@ -609,19 +609,21 @@ function start(totalCasesCountries, data) {
   let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
 
   //Radio Button
-  var radios = document.getElementsByName("chartSelection");
-  if (radios[0].checked) {
-    d3.selectAll(".point").remove();
-    d3.selectAll(".line").remove();
-    draw_new_cases();
-    draw_new_deaths();
-  } else if(radios[1].checkt) {
-    d3.selectAll(".point").remove();
-    d3.selectAll(".line").remove();
-    d3.selectAll(".bar").remove();
-    draw_total_cases();
-    draw_total_deaths();
-  }
+  d3.selectAll(("input[name='chartSelection']")).on("change", function() {
+    if(this.value == "New"){
+      d3.selectAll(".point").remove();
+      d3.selectAll(".line").remove();
+      draw_new_cases();
+      draw_new_deaths();
+    }else{
+      d3.selectAll(".point").remove();
+      d3.selectAll(".line").remove();
+      d3.selectAll(".bar").remove();
+      draw_total_cases();
+      draw_total_deaths();
+    }
+  });
+  
 
   //Change of charts after zooming
   function zoom(beginDate, endDate) {
