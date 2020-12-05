@@ -600,44 +600,80 @@ function start(totalCasesCountries, data) {
     .append("g")
     .attr("class", "deathsChart")
     .attr("transform", "translate(" + 100 + "," + 100 + ")");
+  filtered_data = data.filter(function (d) {
+    return d[2] == current.text();
+  });
+  var minDate = filtered_data[0][3],
+  maxDate = filtered_data[filtered_data.length - 1][3];
+  let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+  let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
 
-  // var radios = document.getElementsByName("chartSelection");
-  // console.log(radios[0]);
-  // if (radios[0].checked) {
-  //   d3.selectAll(".point").remove();
-  //   d3.selectAll(".line").remove();
-  //   draw_new_cases("AFG");
-  //   draw_new_deaths("AFG");
-  // } else {
-  //   d3.selectAll(".point").remove();
-  //   d3.selectAll(".line").remove();
-  //   d3.selectAll(".bar").remove();
-  //   draw_total_cases("AFG");
-  //   draw_total_deaths("AFG");
-  // }
+  //Radio Button
+  var radios = document.getElementsByName("chartSelection");
+  if (radios[0].checked) {
+    d3.selectAll(".point").remove();
+    d3.selectAll(".line").remove();
+    draw_new_cases();
+    draw_new_deaths();
+  } else if(radios[1].checkt) {
+    d3.selectAll(".point").remove();
+    d3.selectAll(".line").remove();
+    d3.selectAll(".bar").remove();
+    draw_total_cases();
+    draw_total_deaths();
+  }
 
-  // draw_new_cases(current.text());
-  // draw_new_deaths(current.text());
-  draw_new_cases("United States");
-  draw_new_deaths("United States");
+  //Change of charts after zooming
+  function zoom(beginDate, endDate) {
 
-  function draw_total_cases(country) {
-    filtered_data = data.filter(function (d) {
-      return d[2] === country;
+    xScale.domain([beginDate, endDate]);
+
+    var t1 = cases.transition().duration(500);
+    var t2 = deaths.transition().duration(500);
+    var size = endDate.getTime() - beginDate.getTime();
+    var step = size / 10;
+    var ticks = [];
+    for (var i = 0; i <= 10; i++) {
+      var tick = new Date(beginDate.getTime() + step * i);
+      ticks.push(tick);
+    }
+
+    xAxis.tickValues(ticks).tickFormat(d3.timeFormat("%Y-%m-%d"));
+    draw_new_cases();
+    draw_new_deaths();
+
+  }
+  //Slider for changing the domain of the x-axis
+  $(function() {
+        $( "#slider-range" ).slider({
+            range: true,
+            min: 0,
+            max: filtered_data.length,
+            values: [0, filtered_data.length],
+            slide: function(event, ui ) {
+              var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
+              var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
+
+              zoom(beginDate, endDate);
+            }
+        });
     });
-    var minDate = filtered_data[0][3],
-      maxDate = filtered_data[filtered_data.length - 1][3];
-    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+  
+  draw_new_cases();
+  draw_new_deaths();
+  
+
+  function draw_total_cases() {
+   
     let yScale = d3
       .scaleLinear()
       .range([height1, 0])
       .domain([
-        0,
+        0, 
         d3.max(filtered_data, function (d) {
           return d[4];
         }),
       ]);
-    let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
     let yAxis = d3.axisLeft(yScale).ticks(5);
 
     cases
@@ -706,13 +742,8 @@ function start(totalCasesCountries, data) {
       .attr("d", valueline);
   }
 
-  function draw_new_cases(country) {
-    filtered_data = data.filter(function (d) {
-      return d[2] == country;
-    });
-    var minDate = filtered_data[0][3],
-      maxDate = filtered_data[filtered_data.length - 1][3];
-    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+  function draw_new_cases() {
+    
     let yScale = d3
       .scaleLinear()
       .range([height1, 0])
@@ -722,7 +753,6 @@ function start(totalCasesCountries, data) {
           return d[5];
         }),
       ]);
-    let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
     let yAxis = d3.axisLeft(yScale).ticks(5);
     function make_y_grid() {
       return d3.axisLeft(yScale).ticks(5);
@@ -814,13 +844,8 @@ function start(totalCasesCountries, data) {
       .attr("d", valueline);
   }
 
-  function draw_total_deaths(country) {
-    filtered_data = data.filter(function (d) {
-      return d[2] == country;
-    });
-    var minDate = filtered_data[0][3],
-      maxDate = filtered_data[filtered_data.length - 1][3];
-    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+  function draw_total_deaths() {
+
     let yScale = d3
       .scaleLinear()
       .range([height, height2])
@@ -830,7 +855,6 @@ function start(totalCasesCountries, data) {
           return d[7];
         }),
       ]);
-    let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
     let yAxis = d3.axisLeft(yScale).ticks(5);
 
     deaths
@@ -900,13 +924,8 @@ function start(totalCasesCountries, data) {
       .attr("d", valueline);
   }
 
-  function draw_new_deaths(country) {
-    filtered_data = data.filter(function (d) {
-      return d[2] == country;
-    });
-    var minDate = filtered_data[0][3],
-      maxDate = filtered_data[filtered_data.length - 1][3];
-    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+  function draw_new_deaths() {
+    
     let yScale = d3
       .scaleLinear()
       .range([height, height2])
@@ -916,7 +935,6 @@ function start(totalCasesCountries, data) {
           return d[8];
         }),
       ]);
-    let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
     let yAxis = d3.axisLeft(yScale).ticks(5);
     function make_y_grid() {
       return d3.axisLeft(yScale).ticks(5);

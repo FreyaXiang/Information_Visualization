@@ -12,13 +12,16 @@
   <script src="https://bl.ocks.org/mbostock/raw/7ea1dde508cec6d2d95306f92642bc42/6aac691494f752142a67cc43c51a0fd09896dbd4/versor.js"></script>
   <!-- jquery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
   <!-- Color scales lib -->
   <script src="https://d3js.org/d3-color.v2.min.js"></script>
   <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 
   <link rel="stylesheet" href="globe.css">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/ui-lightness/jquery-ui.css" type="text/css" media="all" />
 </head>
 <body>
     <div>
@@ -36,42 +39,10 @@
                 <input type="radio" id="option-one" name="chartSelection"><label for="option-one">New</label>
                 <input type="radio" id="option-two" name="chartSelection"><label for="option-two">Cumulative</label>
             </div>
-             <div class="dropdown">
-                <button onclick="myFunction()" class="dropbtn">Start</button>
-                <div id="myDropdown" class="dropdown-content">
-                  <a href="#">2020-1</a>
-                  <a href="#">2020-2</a>
-                  <a href="#">2020-3</a>
-                  <a href="#">2020-4</a>
-                  <a href="#">2020-5</a>
-                  <a href="#">2020-6</a>
-                  <a href="#">2020-7</a>
-                  <a href="#">2020-8</a>
-                  <a href="#">2020-9</a>
-                  <a href="#">2020-10</a>
-                  <a href="#">2020-11</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <button onclick="myFunction()" class="dropbtn">End</button>
-                <div id="myDropdown" class="dropdown-content">
-                  <a href="#">2020-1</a>
-                  <a href="#">2020-2</a>
-                  <a href="#">2020-3</a>
-                  <a href="#">2020-4</a>
-                  <a href="#">2020-5</a>
-                  <a href="#">2020-6</a>
-                  <a href="#">2020-7</a>
-                  <a href="#">2020-8</a>
-                  <a href="#">2020-9</a>
-                  <a href="#">2020-10</a>
-                  <a href="#">2020-11</a>
-                </div>
-            </div>
-         </form>
+        </form>
         <svg width="500" height="500"></svg>
-    </div>
-        
+        </div>
+        <div id="slider-range" width = "500" height = "100"></div>
     </div>
     
     <script src="globe.js"></script>
