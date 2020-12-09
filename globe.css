@@ -80,7 +80,12 @@ div.tooltip {
   }
   
   
-  .x-axis {
+  .x-axis-case {
+    font-style:italic;
+    color: darkslateblue;
+    
+  }
+  .x-axis-death {
     font-style:italic;
     color: darkslateblue;
     

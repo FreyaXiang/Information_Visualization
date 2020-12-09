@@ -606,7 +606,95 @@ function start(totalCasesCountries, data) {
   var minDate = filtered_data[0][3],
   maxDate = filtered_data[filtered_data.length - 1][3];
   let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
-  let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+  let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+  let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+
+  let yScale_total_case = d3
+      .scaleLinear()
+      .range([height1, 0])
+      .domain([
+        0, 
+        d3.max(filtered_data, function (d) {
+          return d[4];
+        }),
+      ]);
+    let yAxis_total_case = d3.axisLeft(yScale_total_case).ticks(5).tickSize(-100);
+
+    let yScale_new_case = d3
+      .scaleLinear()
+      .range([height1, 0])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[5];
+        }),
+      ]);
+    let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
+
+    let yScale_total_death = d3
+      .scaleLinear()
+      .range([height, height2])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[7];
+        }),
+      ]);
+    let yAxis_total_death = d3.axisLeft(yScale_total_death).ticks(5).tickSize(-width);
+
+    let yScale_new_death = d3
+      .scaleLinear()
+      .range([height, height2])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[8];
+        }),
+      ]);
+    let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
+
+    cases
+      .append("text")
+      .attr("class", "y-label")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .attr("text-anchor", "middle")
+      .attr("y", -6)
+      .attr("dy", ".75em")
+      .text("count");
+
+  cases
+      .append("g")
+      .attr("transform", "translate(0, " + height1 + ")")
+      .attr("class", "x-axis-case")
+      .style("color", "darkred")
+      .call(xAxis_case)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
+  deaths
+      .append("g")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .attr("x", 6)
+      .attr("y", height2)
+      .text("count");
+  deaths
+      .append("g")
+      .attr("transform", "translate(0, " + height + ")")
+      .attr("class", "x-axis-death")
+      .style("color", "darkred")
+      .call(xAxis_death)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
+
+    draw_new_cases();
+    draw_new_deaths();
 
   //Radio Button
   d3.selectAll(("input[name='chartSelection']")).on("change", function() {
@@ -624,23 +712,28 @@ function start(totalCasesCountries, data) {
     }
   });
   
-
+  
   //Change of charts after zooming
-  function zoom(beginDate, endDate) {
-
+  function zoom(begin, end) {
+    var beginDate = new Date(minDate.getTime() + begin *86400000);
+    var endDate = new Date(minDate.getTime() + end * 86400000);
     xScale.domain([beginDate, endDate]);
 
-    var t1 = cases.transition().duration(500);
-    var t2 = deaths.transition().duration(500);
-    var size = endDate.getTime() - beginDate.getTime();
+    var t1 = cases.transition().duration(100);
+    var t2 = deaths.transition().duration(100);
+    var size = end - begin
     var step = size / 10;
     var ticks = [];
     for (var i = 0; i <= 10; i++) {
-      var tick = new Date(beginDate.getTime() + step * i);
+      var tick = new Date(beginDate.getTime() + step * i * 86400000);
       ticks.push(tick);
     }
+    
+    xAxis_case.tickValues(ticks);
+    xAxis_death.tickValues(ticks);
 
-    xAxis.tickValues(ticks).tickFormat(d3.timeFormat("%Y-%m-%d"));
+    t1.select(".x-axis-case").call(xAxis_case);
+    t2.select(".x-axis-death").call(xAxis_death);
     draw_new_cases();
     draw_new_deaths();
 
@@ -653,63 +746,37 @@ function start(totalCasesCountries, data) {
             max: filtered_data.length,
             values: [0, filtered_data.length],
             slide: function(event, ui ) {
-              var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
-              var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
-
-              zoom(beginDate, endDate);
+              // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
+              // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
+              var begin = d3.min([ui.values[0], filtered_data.length]);
+              var end = d3.max([ui.values[1], 0]);
+              zoom(begin, end);
             }
         });
     });
   
-  draw_new_cases();
-  draw_new_deaths();
+
   
 
   function draw_total_cases() {
    
-    let yScale = d3
-      .scaleLinear()
-      .range([height1, 0])
-      .domain([
-        0, 
-        d3.max(filtered_data, function (d) {
-          return d[4];
-        }),
-      ]);
-    let yAxis = d3.axisLeft(yScale).ticks(5);
-
-    cases
-      .append("text")
-      .attr("class", "y-label")
-      .attr("text-anchor", "end")
-      .attr("y", 6)
-      .attr("dy", ".75em")
-      .attr("transform", "rotate(-90)")
-      .text("count");
-
-    function make_y_grid() {
-      return d3.axisLeft(yScale).ticks(5);
-    }
-    cases
-      .attr("class", "grid")
-      .style("color", "lightgrey")
-      .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
-    cases
-      .append("g")
-      .attr("transform", "translate(0, " + height1 + ")")
-      .attr("class", "x-axis")
-      .style("color", "darkred")
-      .call(xAxis)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+  
+    // cases
+    //   .append("g")
+    //   .attr("transform", "translate(0, " + height1 + ")")
+    //   .attr("class", "x-axis-case")
+    //   .style("color", "darkred")
+    //   .call(xAxis)
+    //   .selectAll("text")
+    //   .style("text-anchor", "end")
+    //   .attr("dx", "-0.8em")
+    //   .attr("dy", ".015em")
+    //   .attr("transform", "rotate(-65)");
     cases
       .append("g")
       .attr("class", "y-axis")
       .style("color", "darkred")
-      .call(yAxis);
+      .call(yAxis_total_case);
 
     cases
       .selectAll(".point")
@@ -725,7 +792,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .attr("cy", function (d) {
-        return yScale(d[4]);
+        return yScale_total_case(d[4]);
       });
 
     var valueline = d3
@@ -734,7 +801,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .y(function (d) {
-        return yScale(d[4]);
+        return yScale_total_case(d[4]);
       });
 
     cases
@@ -746,47 +813,20 @@ function start(totalCasesCountries, data) {
 
   function draw_new_cases() {
     
-    let yScale = d3
-      .scaleLinear()
-      .range([height1, 0])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[5];
-        }),
-      ]);
-    let yAxis = d3.axisLeft(yScale).ticks(5);
-    function make_y_grid() {
-      return d3.axisLeft(yScale).ticks(5);
-    }
-    cases
-      .attr("class", "grid")
-      .style("color", "lightgrey")
-      .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
-    cases
-      .append("g")
-      .attr("transform", "translate(0, " + height1 + ")")
-      .attr("class", "x-axis")
-      .style("color", "darkred")
-      .call(xAxis)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+    // function make_y_grid() {
+    //   return d3.axisLeft(yScale).ticks(5);
+    // }
+    // cases
+    //   .attr("class", "grid")
+    //   .style("color", "lightgrey")
+    //   .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
+    
     cases
       .append("g")
       .attr("class", "y-axis")
       .style("color", "darkred")
-      .call(yAxis);
-    cases
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", -10)
-      .attr("y", 0)
-      .text("count");
+      .call(yAxis_new_case);
+  
     cases
       .selectAll(".bar")
       .data(filtered_data)
@@ -797,11 +837,11 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .attr("y", function (d) {
-        return yScale(d[5]);
+        return yScale_new_case(d[5]);
       })
       .attr("width", width / filtered_data.length)
       .attr("height", (d) => {
-        return height1 - yScale(d[5]);
+        return height1 - yScale_new_case(d[5]);
       })
       .style("fill", "steelblue")
       .style("stroke", "black")
@@ -827,7 +867,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .attr("cy", function (d) {
-        return yScale(d[6]);
+        return yScale_new_case(d[6]);
       });
 
     var valueline = d3
@@ -836,7 +876,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .y(function (d) {
-        return yScale(d[6]);
+        return yScale_new_case(d[6]);
       });
 
     cases
@@ -848,16 +888,7 @@ function start(totalCasesCountries, data) {
 
   function draw_total_deaths() {
 
-    let yScale = d3
-      .scaleLinear()
-      .range([height, height2])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[7];
-        }),
-      ]);
-    let yAxis = d3.axisLeft(yScale).ticks(5);
+    
 
     deaths
       .append("text")
@@ -870,28 +901,18 @@ function start(totalCasesCountries, data) {
       .text("count");
 
     function make_y_grid() {
-      return d3.axisLeft(yScale).ticks(5);
+      return d3.axisLeft(yScale_total_death).ticks(5);
     }
     deaths
       .attr("class", "grid")
       .style("color", "lightgrey")
       .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
-    deaths
-      .append("g")
-      .attr("transform", "translate(0, " + height + ")")
-      .attr("class", "x-axis")
-      .style("color", "darkred")
-      .call(xAxis)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+    
     deaths
       .append("g")
       .attr("class", "y-axis")
       .style("color", "darkred")
-      .call(yAxis);
+      .call(yAxis_total_death);
 
     deaths
       .selectAll(".point")
@@ -907,7 +928,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .attr("cy", function (d) {
-        return yScale(d[7]);
+        return yScale_total_death(d[7]);
       });
 
     var valueline = d3
@@ -916,7 +937,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .y(function (d) {
-        return yScale(d[7]);
+        return yScale_total_death(d[7]);
       });
 
     deaths
@@ -928,47 +949,31 @@ function start(totalCasesCountries, data) {
 
   function draw_new_deaths() {
     
-    let yScale = d3
-      .scaleLinear()
-      .range([height, height2])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[8];
-        }),
-      ]);
-    let yAxis = d3.axisLeft(yScale).ticks(5);
-    function make_y_grid() {
-      return d3.axisLeft(yScale).ticks(5);
-    }
-    deaths
-      .attr("class", "grid")
-      .style("color", "lightgrey")
-      .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
-    deaths
-      .append("g")
-      .attr("transform", "translate(0, " + height + ")")
-      .attr("class", "x-axis")
-      .style("color", "darkred")
-      .call(xAxis)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+    
+    // function make_y_grid() {
+    //   return d3.axisLeft(yScale).ticks(5);
+    // }
+    // deaths
+    //   .attr("class", "grid")
+    //   .style("color", "lightgrey")
+    //   .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
+    // deaths
+    //   .append("g")
+    //   .attr("transform", "translate(0, " + height + ")")
+    //   .attr("class", "x-axis-death")
+    //   .style("color", "darkred")
+    //   .call(xAxis)
+    //   .selectAll("text")
+    //   .style("text-anchor", "end")
+    //   .attr("dx", "-0.8em")
+    //   .attr("dy", ".015em")
+    //   .attr("transform", "rotate(-65)");
     deaths
       .append("g")
       .attr("class", "y-axis")
       .style("color", "darkred")
-      .call(yAxis);
-    deaths
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", -10)
-      .attr("y", 0)
-      .text("count");
+      .call(yAxis_new_death);
+    
     deaths
       .selectAll(".bar")
       .data(filtered_data)
@@ -979,11 +984,11 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .attr("y", function (d) {
-        return yScale(d[8]);
+        return yScale_new_death(d[8]);
       })
       .attr("width", width / filtered_data.length)
       .attr("height", (d) => {
-        return height - yScale(d[8]);
+        return height - yScale_new_death(d[8]);
       })
       .style("fill", "steelblue")
       .style("stroke", "black")
@@ -1009,7 +1014,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .attr("cy", function (d) {
-        return yScale(d[9]);
+        return yScale_new_death(d[9]);
       });
 
     var valueline = d3
@@ -1018,7 +1023,7 @@ function start(totalCasesCountries, data) {
         return xScale(d[3]);
       })
       .y(function (d) {
-        return yScale(d[9]);
+        return yScale_new_death(d[9]);
       });
 
     deaths
