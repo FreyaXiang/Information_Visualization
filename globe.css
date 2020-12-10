@@ -56,6 +56,7 @@ div.tooltip {
   }
   
   svg {
+    font: 20px sans-serif;
     background-repeat: no-repeat;
     background-size: cover;
   }
@@ -103,7 +104,7 @@ div.tooltip {
   
   input[type=radio] {
     position: absolute;
-    visibility: hidden;
+    /* visibility: hidden; */
     display: none;
   }
   

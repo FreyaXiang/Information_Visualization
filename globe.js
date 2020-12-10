@@ -512,10 +512,9 @@ function start(totalCasesCountries, data) {
     stopRotation();
     render();
     enter(c);
-    // d3.select("g").remove();
-    // draw_new_cases(getKeyByValue(id, +currentCountry.id));
-    // draw_new_deaths(getKeyByValue(id, +currentCountry.id));
-    // console.log(getKeyByValue(id, +currentCountry.id));
+    // cases.selectAll("*").remove();
+    // deaths.selectAll("*").remove();
+    draw_charts(getKeyByValue(id, +currentCountry.id));
   }
 
   function getCountry(event) {
@@ -600,81 +599,57 @@ function start(totalCasesCountries, data) {
     .append("g")
     .attr("class", "deathsChart")
     .attr("transform", "translate(" + 100 + "," + 100 + ")");
-  filtered_data = data.filter(function (d) {
-    return d[2] == current.text();
-  });
-  var minDate = filtered_data[0][3],
-  maxDate = filtered_data[filtered_data.length - 1][3];
-  let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
-  let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
-  let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
-
-  let yScale_total_case = d3
-      .scaleLinear()
-      .range([height1, 0])
-      .domain([
-        0, 
-        d3.max(filtered_data, function (d) {
-          return d[4];
-        }),
-      ]);
-    let yAxis_total_case = d3.axisLeft(yScale_total_case).ticks(5).tickSize(-100);
-
-    let yScale_new_case = d3
-      .scaleLinear()
-      .range([height1, 0])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[5];
-        }),
-      ]);
-    let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
-
-    let yScale_total_death = d3
-      .scaleLinear()
-      .range([height, height2])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[7];
-        }),
-      ]);
-    let yAxis_total_death = d3.axisLeft(yScale_total_death).ticks(5).tickSize(-width);
-
-    let yScale_new_death = d3
-      .scaleLinear()
-      .range([height, height2])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[8];
-        }),
-      ]);
-    let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
-
-    
   
+    var filtered_data = data.filter(function (d) {
+      return d[2] == "United States";
+    });
 
-    draw_new_cases();
-    draw_new_deaths();
+    var minDate = filtered_data[0][3],
+        maxDate = filtered_data[filtered_data.length - 1][3];
 
-  //Radio Button
-  d3.selectAll(("input[name='chartSelection']")).on("change", function() {
+  draw_charts("United States");
+
+  function draw_charts(country){
+    filtered_data = data.filter(function (d) {
+      return d[2] == country;
+    });
+    minDate = filtered_data[0][3],
+    maxDate = filtered_data[filtered_data.length - 1][3];
     if(this.value == "New"){
-      d3.selectAll(".point").remove();
-      d3.selectAll(".line").remove();
-      
+      cases.selectAll("*").remove();
+      deaths.selectAll("*").remove();
       draw_new_cases();
       draw_new_deaths();
-    }else{
-      d3.selectAll(".point").remove();
-      d3.selectAll(".line").remove();
-      d3.selectAll(".bar").remove();
+    }else if(this.value == "Cumulative"){
+      cases.selectAll("*").remove();
+      deaths.selectAll("*").remove();
       draw_total_cases();
       draw_total_deaths();
+    }else{
+      cases.selectAll("*").remove();
+      deaths.selectAll("*").remove();
+      draw_new_cases();
+      draw_new_deaths();
     }
-  });
+    
+    //Radio Button
+    d3.selectAll(("input[name='chartSelection']")).on("change", function() {
+      if(this.value == "New"){
+        cases.selectAll("*").remove();
+        deaths.selectAll("*").remove();
+        draw_new_cases();
+        draw_new_deaths();
+      }else{
+        cases.selectAll("*").remove();
+        deaths.selectAll("*").remove();
+        draw_total_cases();
+        draw_total_deaths();
+      }
+    });
+  }
+  
+
+  
   
   
   //Change of charts after zooming
@@ -704,32 +679,46 @@ function start(totalCasesCountries, data) {
   }
   //Slider for changing the domain of the x-axis
   $(function() {
-        $( "#slider-range" ).slider({
-            range: true,
-            min: 0,
-            max: filtered_data.length,
-            values: [0, filtered_data.length],
-            slide: function(event, ui ) {
-              // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
-              // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
-              var begin = d3.min([ui.values[0], filtered_data.length]);
-              var end = d3.max([ui.values[1], 0]);
-              zoom(begin, end);
-            }
-        });
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 0,
+      max: filtered_data.length,
+      values: [0, filtered_data.length],
+      slide: function(event, ui ) {
+        // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
+        // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
+        var begin = d3.min([ui.values[0], filtered_data.length]);
+        var end = d3.max([ui.values[1], 0]);
+        zoom(begin, end);
+      }
     });
+  });
   
 
   
 
   function draw_total_cases() {
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_total_case = d3
+      .scaleLinear()
+      .range([height1, 0])
+      .domain([
+        0, 
+        d3.max(filtered_data, function (d) {
+          return d[4];
+        }),
+      ]);
+    let yAxis_total_case = d3.axisLeft(yScale_total_case).ticks(5).tickSize(-width);
     cases
     .append("text")
     .attr("class", "y-label")
     .attr("transform", `translate(${40}, ${-5})`)
-    .attr("text-anchor", "middle")
-    .attr("y", -6)
+    .attr("text-anchor", "end")
+    .attr("y", -80)
     .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .attr("font-size", "1 em")
     .text("count");
 
   cases
@@ -744,17 +733,6 @@ function start(totalCasesCountries, data) {
     .attr("dy", ".015em")
     .attr("transform", "rotate(-65)");
   
-    // cases
-    //   .append("g")
-    //   .attr("transform", "translate(0, " + height1 + ")")
-    //   .attr("class", "x-axis-case")
-    //   .style("color", "darkred")
-    //   .call(xAxis)
-    //   .selectAll("text")
-    //   .style("text-anchor", "end")
-    //   .attr("dx", "-0.8em")
-    //   .attr("dy", ".015em")
-    //   .attr("transform", "rotate(-65)");
     cases
       .append("g")
       .attr("class", "y-axis")
@@ -814,14 +792,30 @@ function start(totalCasesCountries, data) {
       .attr("d", valueline);
   }
 
+
+
   function draw_new_cases() {
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_new_case = d3
+      .scaleLinear()
+      .range([height1, 0])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[5];
+        }),
+      ]);
+    let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
     cases
       .append("text")
       .attr("class", "y-label")
       .attr("transform", `translate(${40}, ${-5})`)
-      .attr("text-anchor", "middle")
-      .attr("y", -6)
+      .attr("text-anchor", "end")
+      .attr("y", -80)
       .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .attr("font-size", "0.5 em")
       .text("count");
 
   cases
@@ -916,15 +910,18 @@ function start(totalCasesCountries, data) {
   };
 
   function draw_total_deaths() {
-    
-    deaths
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", 6)
-      .attr("y", height2)
-      .text("count");
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_total_death = d3
+      .scaleLinear()
+      .range([height, height2])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[7];
+        }),
+      ]);
+    let yAxis_total_death = d3.axisLeft(yScale_total_death).ticks(5).tickSize(-width);
   deaths
       .append("g")
       .attr("transform", "translate(0, " + height + ")")
@@ -937,15 +934,16 @@ function start(totalCasesCountries, data) {
       .attr("dy", ".015em")
       .attr("transform", "rotate(-65)");
 
-    deaths
-      .append("text")
-      .attr("class", "y-label")
-      .attr("text-anchor", "end")
-      .attr("x", height2)
-      .attr("y", 6)
-      .attr("dy", ".75em")
-      .attr("transform", "rotate(-90)")
-      .text("count");
+    // deaths
+    //   .append("text")
+    //   .attr("class", "y-label")
+    //   .attr("text-anchor", "end")
+    //   .attr("x", -height2)
+    //   .attr("y", -25)
+    //   .attr("dy", ".75em")
+    //   .attr("font-size", "1 em")
+    //   .attr("transform", "rotate(-90)")
+    //   .text("count");
 
     
     deaths
@@ -988,15 +986,28 @@ function start(totalCasesCountries, data) {
   };
 
   function draw_new_deaths() {
-    
-    deaths
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", 6)
-      .attr("y", height2)
-      .text("count");
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_new_death = d3
+      .scaleLinear()
+      .range([height, height2])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[8];
+        }),
+      ]);
+    let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
+    // deaths
+    //   .append("g")
+    //   .attr("transform", `translate(${40}, ${-5})`)
+    //   .append("text")
+    //   .style("text-anchor", "middle")
+    //   .attr("x", -height2)
+    //   .attr("y", -25)
+    //   .attr("transform", "rotate(-90)")
+    //   .attr("font-size", "1 em")
+    //   .text("count");
   deaths
       .append("g")
       .attr("transform", "translate(0, " + height + ")")
