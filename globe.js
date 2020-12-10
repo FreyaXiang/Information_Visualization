@@ -714,7 +714,7 @@ function start(totalCasesCountries, data, data2) {
       .append("g")
       .attr("transform", "translate(0, " + height1 + ")")
       .attr("class", "x-axis-case")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(xAxis_case)
       .selectAll("text")
       .style("text-anchor", "end")
@@ -725,7 +725,7 @@ function start(totalCasesCountries, data, data2) {
     cases
       .append("g")
       .attr("class", "y-axis")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(yAxis_total_case);
 
     cases
@@ -809,7 +809,7 @@ function start(totalCasesCountries, data, data2) {
       .append("g")
       .attr("transform", "translate(0, " + height1 + ")")
       .attr("class", "x-axis-case")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(xAxis_case)
       .selectAll("text")
       .style("text-anchor", "end")
@@ -820,7 +820,7 @@ function start(totalCasesCountries, data, data2) {
     cases
       .append("g")
       .attr("class", "y-axis")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(yAxis_new_case);
 
     cases
@@ -857,6 +857,7 @@ function start(totalCasesCountries, data, data2) {
       })
       .on("mouseout", function (d) {
         d3.select(this).transition().style("fill", "brown");
+        div.transition().duration(200).style("opacity", 0);
         deaths.selectAll("rect").each(function (d) {
           d3.select(this).transition().style("fill", "brown");
         });
@@ -916,7 +917,7 @@ function start(totalCasesCountries, data, data2) {
       .append("g")
       .attr("transform", "translate(0, " + height + ")")
       .attr("class", "x-axis-death")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(xAxis_death)
       .selectAll("text")
       .style("text-anchor", "end")
@@ -924,21 +925,10 @@ function start(totalCasesCountries, data, data2) {
       .attr("dy", ".015em")
       .attr("transform", "rotate(-65)");
 
-    // deaths
-    //   .append("text")
-    //   .attr("class", "y-label")
-    //   .attr("text-anchor", "end")
-    //   .attr("x", -height2)
-    //   .attr("y", -25)
-    //   .attr("dy", ".75em")
-    //   .attr("font-size", "1 em")
-    //   .attr("transform", "rotate(-90)")
-    //   .text("count");
-
     deaths
       .append("g")
       .attr("class", "y-axis")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(yAxis_total_death);
 
     deaths
@@ -992,21 +982,11 @@ function start(totalCasesCountries, data, data2) {
       .axisLeft(yScale_new_death)
       .ticks(5)
       .tickSize(-width);
-    // deaths
-    //   .append("g")
-    //   .attr("transform", `translate(${40}, ${-5})`)
-    //   .append("text")
-    //   .style("text-anchor", "middle")
-    //   .attr("x", -height2)
-    //   .attr("y", -25)
-    //   .attr("transform", "rotate(-90)")
-    //   .attr("font-size", "1 em")
-    //   .text("count");
     deaths
       .append("g")
       .attr("transform", "translate(0, " + height + ")")
       .attr("class", "x-axis-death")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(xAxis_death)
       .selectAll("text")
       .style("text-anchor", "end")
@@ -1016,7 +996,7 @@ function start(totalCasesCountries, data, data2) {
     deaths
       .append("g")
       .attr("class", "y-axis")
-      .style("color", "darkred")
+      .style("color", "white")
       .call(yAxis_new_death);
 
     deaths
@@ -1053,6 +1033,7 @@ function start(totalCasesCountries, data, data2) {
       })
       .on("mouseout", function (d) {
         d3.select(this).transition().style("fill", "brown");
+        div.transition().duration(200).style("opacity", 0);
         cases.selectAll("rect").each(function (d) {
           d3.select(this).transition().style("fill", "brown");
         });
@@ -1094,6 +1075,7 @@ function start(totalCasesCountries, data, data2) {
       })
       .on("mouseout", function (d) {
         d3.select(this).transition().style("fill", "lightpink");
+        div.transition().duration(200).style("opacity", 0);
         cases.selectAll("point").each(function (d) {
           d3.select(this).transition().style("fill", "lightpink");
         });
