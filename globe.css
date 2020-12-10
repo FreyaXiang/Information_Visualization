@@ -1,6 +1,6 @@
 html, body {
     margin: 0;
-    padding: 5px auto;
+    padding: 10px auto;
     background-color: black;
     text-align: center;
 }
@@ -12,6 +12,11 @@ html, body {
 
 #radios {
   margin: 30px;
+}
+
+img {
+  position: relative;
+  left: 30%;
 }
 
 h3 {

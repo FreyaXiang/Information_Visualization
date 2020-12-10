@@ -248,7 +248,7 @@ function start(totalCasesCountries, data, data2) {
   // ms to wait after dragging before auto-rotating
   var rotationDelay = 3000;
   // scale of the globe (not the canvas element)
-  var scaleFactor = 0.9;
+  var scaleFactor = 1.0;
   // autorotation speed
   var degPerSec = 9;
   // start angles
@@ -341,8 +341,8 @@ function start(totalCasesCountries, data, data2) {
   }
 
   function scale() {
-    width = document.documentElement.clientWidth * 0.9;
-    height = document.documentElement.clientHeight * 0.9;
+    width = document.documentElement.clientWidth * 0.8;
+    height = document.documentElement.clientHeight * 0.8;
     canvas.attr("width", width).attr("height", height);
     projection
       .scale((scaleFactor * Math.min(width, height)) / 2)
