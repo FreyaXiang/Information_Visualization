@@ -66,8 +66,9 @@ div.tooltip {
     fill: none;
     pointer-events: all;
   }
-/*   
+ 
   svg {
+    /* font: 20px sans-serif; */
     background-repeat: no-repeat;
     background-size: cover;
   }
@@ -88,7 +89,7 @@ div.tooltip {
   
   .y-label{
     color: crimson;
-    font-size: 2em;
+    /* font-size: 2em; */
   }
   
   
@@ -111,13 +112,11 @@ div.tooltip {
     stroke-width: 2px;
   }
   
-  
-  
   input[type=radio] {
     position: absolute;
-    visibility: hidden;
-    display: none;
-  }
+     visibility: hidden; 
+     display: none;
+  } 
   
   label {
     color: rgb(90, 19, 19);
@@ -129,17 +128,9 @@ div.tooltip {
   
   input[type="radio"]:checked + label{
     color: white;
-    background: rgb(160, 100, 100);
+    background:  #940707;
   }
-  
-
-  .radio-group {
-    border: solid 3px rgb(160, 100, 100);
-    display: inline-block;
-    margin: 20px;
-    border-radius: 8px;
-    overflow: hidden;
-  }
+ 
   
   .dropbtn {
     background-color: #3498DB;

@@ -227,8 +227,8 @@ $.ajax({
   success: function (response) {
     data = $.csv.toArrays(response);
     data2 = $.csv.toObjects(response);
-    drawBrush1(data2, "Canada");
-    drawBrush2(data2, "Canada");
+    drawBrush1(data2, "World");
+    drawBrush2(data2, "World");
     // total cases and color scale
     var totalCasesCountries = {};
     data.forEach((col) => {
@@ -523,10 +523,10 @@ function start(totalCasesCountries, data, data2) {
     document.getElementById("brush2").innerHTML = "";
     drawBrush1(data2, getKeyByValue(id, +currentCountry.id));
     drawBrush2(data2, getKeyByValue(id, +currentCountry.id));
-    // d3.select("g").remove();
-    // draw_new_cases(getKeyByValue(id, +currentCountry.id));
-    // draw_new_deaths(getKeyByValue(id, +currentCountry.id));
     console.log(getKeyByValue(id, +currentCountry.id));
+    // cases.selectAll("*").remove();
+    // deaths.selectAll("*").remove();
+    draw_charts(getKeyByValue(id, +currentCountry.id));
   }
 
   function getCountry(event) {
@@ -577,542 +577,572 @@ function start(totalCasesCountries, data, data2) {
   });
 
   ///////////////////////////////////////////////////
+  var parseDate = d3.timeParse("%Y-%m-%d");
+  var formatTime = d3.timeFormat("%B %d, %Y");
+  data.forEach((d) => {
+    d[3] = parseDate(d[3]);
+    d[4] = parseInt(d[4]) || 0;
+    d[5] = parseInt(d[5]) || 0;
+    d[6] = parseFloat(d[6]) || 0;
+    d[7] = parseInt(d[7]) || 0;
+    d[8] = parseInt(d[8]) || 0;
+    d[9] = parseFloat(d[9]) || 0;
+  });
 
-  // var parseDate = d3.timeParse("%Y-%m-%d");
-  // var formatTime = d3.timeFormat("%B %d, %Y");
-  // data.forEach((d) => {
-  //   d[3] = parseDate(d[3]);
-  //   d[4] = parseInt(d[4]) || 0;
-  //   d[5] = parseInt(d[5]) || 0;
-  //   d[6] = parseFloat(d[6]) || 0;
-  //   d[7] = parseInt(d[7]) || 0;
-  //   d[8] = parseInt(d[8]) || 0;
-  //   d[9] = parseFloat(d[9]) || 0;
-  // });
+  var div = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+  var svg = d3.select("#barChart");
+  var margin = 180;
+  var gap_between_views = 150;
+  var width = svg.attr("width") - margin;
+  var height = svg.attr("height") - margin;
+  var height1 = 0.5 * height - 0.5 * gap_between_views;
+  var height2 = 0.5 * height + 0.5 * gap_between_views;
+  let cases = svg
+    .append("g")
+    .attr("class", "casesChart")
+    .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
-  // var div = d3
-  //   .select("body")
-  //   .append("div")
-  //   .attr("class", "tooltip")
-  //   .style("opacity", 0);
-  // var svg = d3.select("#svg2");
-  // var margin = 180;
-  // var gap_between_views = 150;
-  // var width = svg.attr("width") - margin;
-  // var height = svg.attr("height") - margin;
-  // var height1 = 0.5 * height - 0.5 * gap_between_views;
-  // var height2 = 0.5 * height + 0.5 * gap_between_views;
-  // let cases = svg
-  //   .append("g")
-  //   .attr("class", "casesChart")
-  //   .attr("transform", "translate(" + 100 + "," + 100 + ")");
+  let deaths = svg
+    .append("g")
+    .attr("class", "deathsChart")
+    .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
-  // let deaths = svg
-  //   .append("g")
-  //   .attr("class", "deathsChart")
-  //   .attr("transform", "translate(" + 100 + "," + 100 + ")");
-  // filtered_data = data.filter(function (d) {
-  //   return d[2] == current.text();
-  // });
-  // var minDate = filtered_data[0][3],
-  //   maxDate = filtered_data[filtered_data.length - 1][3];
-  // let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
-  // let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
-  // let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+  var filtered_data = data.filter(function (d) {
+    return d[2] == "United States";
+  });
 
-  // let yScale_total_case = d3
-  //   .scaleLinear()
-  //   .range([height1, 0])
-  //   .domain([
-  //     0,
-  //     d3.max(filtered_data, function (d) {
-  //       return d[4];
-  //     }),
-  //   ]);
-  // let yAxis_total_case = d3.axisLeft(yScale_total_case).ticks(5).tickSize(-100);
+  var minDate = filtered_data[0][3],
+    maxDate = filtered_data[filtered_data.length - 1][3];
 
-  // let yScale_new_case = d3
-  //   .scaleLinear()
-  //   .range([height1, 0])
-  //   .domain([
-  //     0,
-  //     d3.max(filtered_data, function (d) {
-  //       return d[5];
-  //     }),
-  //   ]);
-  // let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
+  draw_charts("United States");
 
-  // let yScale_total_death = d3
-  //   .scaleLinear()
-  //   .range([height, height2])
-  //   .domain([
-  //     0,
-  //     d3.max(filtered_data, function (d) {
-  //       return d[7];
-  //     }),
-  //   ]);
-  // let yAxis_total_death = d3
-  //   .axisLeft(yScale_total_death)
-  //   .ticks(5)
-  //   .tickSize(-width);
+  function draw_charts(country) {
+    filtered_data = data.filter(function (d) {
+      return d[2] == country;
+    });
+    (minDate = filtered_data[0][3]),
+      (maxDate = filtered_data[filtered_data.length - 1][3]);
+    if (this.value == "New") {
+      cases.selectAll("*").remove();
+      deaths.selectAll("*").remove();
+      draw_new_cases();
+      draw_new_deaths();
+    } else if (this.value == "Cumulative") {
+      cases.selectAll("*").remove();
+      deaths.selectAll("*").remove();
+      draw_total_cases();
+      draw_total_deaths();
+    } else {
+      cases.selectAll("*").remove();
+      deaths.selectAll("*").remove();
+      draw_new_cases();
+      draw_new_deaths();
+    }
 
-  // let yScale_new_death = d3
-  //   .scaleLinear()
-  //   .range([height, height2])
-  //   .domain([
-  //     0,
-  //     d3.max(filtered_data, function (d) {
-  //       return d[8];
-  //     }),
-  //   ]);
-  // let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
+    //Radio Button
+    d3.selectAll("input[name='chartSelection']").on("change", function () {
+      if (this.value == "New") {
+        cases.selectAll("*").remove();
+        deaths.selectAll("*").remove();
+        draw_new_cases();
+        draw_new_deaths();
+      } else {
+        cases.selectAll("*").remove();
+        deaths.selectAll("*").remove();
+        draw_total_cases();
+        draw_total_deaths();
+      }
+    });
+  }
 
-  // draw_new_cases();
-  // draw_new_deaths();
+  //Change of charts after zooming
+  function zoom(begin, end) {
+    var beginDate = new Date(minDate.getTime() + begin * 86400000);
+    var endDate = new Date(minDate.getTime() + end * 86400000);
+    xScale.domain([beginDate, endDate]);
 
-  // //Radio Button
-  // d3.selectAll("input[name='chartSelection']").on("change", function () {
-  //   if (this.value == "New") {
-  //     d3.selectAll(".point").remove();
-  //     d3.selectAll(".line").remove();
+    var t1 = cases.transition().duration(100);
+    var t2 = deaths.transition().duration(100);
+    var size = end - begin;
+    var step = size / 10;
+    var ticks = [];
+    for (var i = 0; i <= 10; i++) {
+      var tick = new Date(beginDate.getTime() + step * i * 86400000);
+      ticks.push(tick);
+    }
 
-  //     draw_new_cases();
-  //     draw_new_deaths();
-  //   } else {
-  //     d3.selectAll(".point").remove();
-  //     d3.selectAll(".line").remove();
-  //     d3.selectAll(".bar").remove();
-  //     draw_total_cases();
-  //     draw_total_deaths();
-  //   }
-  // });
+    xAxis_case.tickValues(ticks);
+    xAxis_death.tickValues(ticks);
 
-  // //Change of charts after zooming
-  // function zoom(begin, end) {
-  //   var beginDate = new Date(minDate.getTime() + begin * 86400000);
-  //   var endDate = new Date(minDate.getTime() + end * 86400000);
-  //   xScale.domain([beginDate, endDate]);
+    t1.select(".x-axis-case").call(xAxis_case);
+    t2.select(".x-axis-death").call(xAxis_death);
+    draw_new_cases();
+    draw_new_deaths();
+  }
+  //Slider for changing the domain of the x-axis
+  $(function () {
+    $("#slider-range").slider({
+      range: true,
+      min: 0,
+      max: filtered_data.length,
+      values: [0, filtered_data.length],
+      slide: function (event, ui) {
+        // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
+        // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
+        var begin = d3.min([ui.values[0], filtered_data.length]);
+        var end = d3.max([ui.values[1], 0]);
+        zoom(begin, end);
+      },
+    });
+  });
 
-  //   var t1 = cases.transition().duration(100);
-  //   var t2 = deaths.transition().duration(100);
-  //   var size = end - begin;
-  //   var step = size / 10;
-  //   var ticks = [];
-  //   for (var i = 0; i <= 10; i++) {
-  //     var tick = new Date(beginDate.getTime() + step * i * 86400000);
-  //     ticks.push(tick);
-  //   }
+  function draw_total_cases() {
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_case = d3
+      .axisBottom(xScale)
+      .tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_total_case = d3
+      .scaleLinear()
+      .range([height1, 0])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[4];
+        }),
+      ]);
+    let yAxis_total_case = d3
+      .axisLeft(yScale_total_case)
+      .ticks(5)
+      .tickSize(-width);
+    cases
+      .append("text")
+      .attr("class", "y-label")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .attr("text-anchor", "end")
+      .attr("y", -80)
+      .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .attr("font-size", "1 em")
+      .text("count");
 
-  //   xAxis_case.tickValues(ticks);
-  //   xAxis_death.tickValues(ticks);
+    cases
+      .append("g")
+      .attr("transform", "translate(0, " + height1 + ")")
+      .attr("class", "x-axis-case")
+      .style("color", "darkred")
+      .call(xAxis_case)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
 
-  //   t1.select(".x-axis-case").call(xAxis_case);
-  //   t2.select(".x-axis-death").call(xAxis_death);
-  //   draw_new_cases();
-  //   draw_new_deaths();
-  // }
-  // //Slider for changing the domain of the x-axis
-  // $(function () {
-  //   $("#slider-range").slider({
-  //     range: true,
-  //     min: 0,
-  //     max: filtered_data.length,
-  //     values: [0, filtered_data.length],
-  //     slide: function (event, ui) {
-  //       // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
-  //       // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
-  //       var begin = d3.min([ui.values[0], filtered_data.length]);
-  //       var end = d3.max([ui.values[1], 0]);
-  //       zoom(begin, end);
-  //     },
-  //   });
-  // });
+    cases
+      .append("g")
+      .attr("class", "y-axis")
+      .style("color", "darkred")
+      .call(yAxis_total_case);
 
-  // function draw_total_cases() {
-  //   cases
-  //     .append("text")
-  //     .attr("class", "y-label")
-  //     .attr("transform", `translate(${40}, ${-5})`)
-  //     .attr("text-anchor", "middle")
-  //     .attr("y", -6)
-  //     .attr("dy", ".75em")
-  //     .text("count");
+    cases
+      .selectAll(".point")
+      .data(filtered_data)
+      .enter()
+      .append("circle")
+      .attr("class", "point")
+      .attr("r", "2")
+      .attr("fill", "lightcoral")
+      .attr("stroke", "darkred")
+      .attr("stroke-width", 0.5)
+      .attr("cx", function (d) {
+        return xScale(d[3]);
+      })
+      .attr("cy", function (d) {
+        return yScale_total_case(d[4]);
+      })
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition().duration(200).style("opacity", 0.8);
+        div
+          .html("Date: " + formatTime(d[3]) + "<br/>" + "Total Cases: " + d[4])
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+        d3.select(this).transition().style("fill", "black");
+        cases.selectAll("point").each(function (d) {
+          if (d[3] == date) d3.select(this).transition().style("fill", "black");
+        });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "lightpink");
+        cases.selectAll("point").each(function (d) {
+          d3.select(this).transition().style("fill", "lightpink");
+        });
+      });
 
-  //   cases
-  //     .append("g")
-  //     .attr("transform", "translate(0, " + height1 + ")")
-  //     .attr("class", "x-axis-case")
-  //     .style("color", "darkred")
-  //     .call(xAxis_case)
-  //     .selectAll("text")
-  //     .style("text-anchor", "end")
-  //     .attr("dx", "-0.8em")
-  //     .attr("dy", ".015em")
-  //     .attr("transform", "rotate(-65)");
+    var valueline = d3
+      .line()
+      .x(function (d) {
+        return xScale(d[3]);
+      })
+      .y(function (d) {
+        return yScale_total_case(d[4]);
+      });
 
-  //   // cases
-  //   //   .append("g")
-  //   //   .attr("transform", "translate(0, " + height1 + ")")
-  //   //   .attr("class", "x-axis-case")
-  //   //   .style("color", "darkred")
-  //   //   .call(xAxis)
-  //   //   .selectAll("text")
-  //   //   .style("text-anchor", "end")
-  //   //   .attr("dx", "-0.8em")
-  //   //   .attr("dy", ".015em")
-  //   //   .attr("transform", "rotate(-65)");
-  //   cases
-  //     .append("g")
-  //     .attr("class", "y-axis")
-  //     .style("color", "darkred")
-  //     .call(yAxis_total_case);
+    cases
+      .append("path")
+      .data([filtered_data])
+      .attr("class", "line")
+      .attr("d", valueline);
+  }
 
-  //   cases
-  //     .selectAll(".point")
-  //     .data(filtered_data)
-  //     .enter()
-  //     .append("circle")
-  //     .attr("class", "point")
-  //     .attr("r", "2")
-  //     .attr("fill", "lightcoral")
-  //     .attr("stroke", "darkred")
-  //     .attr("stroke-width", 0.5)
-  //     .attr("cx", function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .attr("cy", function (d) {
-  //       return yScale_total_case(d[4]);
-  //     })
-  //     .on("mouseover", function (d) {
-  //       let date = d[3];
-  //       div.transition().duration(200).style("opacity", 0.8);
-  //       div
-  //         .html("Date: " + formatTime(d[3]) + "<br/>" + "Total Cases: " + d[4])
-  //         .style("left", d3.event.pageX + "px")
-  //         .style("top", d3.event.pageY - 28 + "px");
-  //       d3.select(this).transition().style("fill", "black");
-  //       cases.selectAll("point").each(function (d) {
-  //         if (d[3] == date) d3.select(this).transition().style("fill", "black");
-  //       });
-  //     })
-  //     .on("mouseout", function (d) {
-  //       d3.select(this).transition().style("fill", "lightpink");
-  //       cases.selectAll("point").each(function (d) {
-  //         d3.select(this).transition().style("fill", "lightpink");
-  //       });
-  //     });
+  function draw_new_cases() {
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_case = d3
+      .axisBottom(xScale)
+      .tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_new_case = d3
+      .scaleLinear()
+      .range([height1, 0])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[5];
+        }),
+      ]);
+    let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
+    cases
+      .append("text")
+      .attr("class", "y-label")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .attr("text-anchor", "end")
+      .attr("y", -80)
+      .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .attr("font-size", "0.5 em")
+      .text("count");
 
-  //   var valueline = d3
-  //     .line()
-  //     .x(function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .y(function (d) {
-  //       return yScale_total_case(d[4]);
-  //     });
+    cases
+      .append("g")
+      .attr("transform", "translate(0, " + height1 + ")")
+      .attr("class", "x-axis-case")
+      .style("color", "darkred")
+      .call(xAxis_case)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
 
-  //   cases
-  //     .append("path")
-  //     .data([filtered_data])
-  //     .attr("class", "line")
-  //     .attr("d", valueline);
-  // }
+    cases
+      .append("g")
+      .attr("class", "y-axis")
+      .style("color", "darkred")
+      .call(yAxis_new_case);
 
-  // function draw_new_cases() {
-  //   cases
-  //     .append("text")
-  //     .attr("class", "y-label")
-  //     .attr("transform", `translate(${40}, ${-5})`)
-  //     .attr("text-anchor", "middle")
-  //     .attr("y", -6)
-  //     .attr("dy", ".75em")
-  //     .text("count");
+    cases
+      .selectAll(".bar")
+      .data(filtered_data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", function (d) {
+        return xScale(d[3]);
+      })
+      .attr("y", function (d) {
+        return yScale_new_case(d[5]);
+      })
+      .attr("width", width / filtered_data.length)
+      .attr("height", (d) => {
+        return height1 - yScale_new_case(d[5]);
+      })
+      .style("fill", "brown")
+      .style("stroke", "black")
+      .style("stroke-width", 0.5)
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition().duration(200).style("opacity", 0.8);
+        div
+          .html("Date: " + formatTime(d[3]) + "<br/>" + "New Cases: " + d[5])
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+        d3.select(this).transition().style("fill", "salmon");
+        deaths.selectAll("rect").each(function (d) {
+          if (d[3] == date)
+            d3.select(this).transition().style("fill", "salmon");
+        });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "brown");
+        deaths.selectAll("rect").each(function (d) {
+          d3.select(this).transition().style("fill", "brown");
+        });
+      });
+    cases
+      .selectAll(".point")
+      .data(filtered_data)
+      .enter()
+      .append("circle")
+      .attr("r", "2")
+      .attr("class", "point")
+      .attr("fill", "lightcoral")
+      .attr("stroke", "darkred")
+      .attr("stroke-width", 0.5)
+      .attr("cx", function (d) {
+        return xScale(d[3]);
+      })
+      .attr("cy", function (d) {
+        return yScale_new_case(d[6]);
+      });
 
-  //   cases
-  //     .append("g")
-  //     .attr("transform", "translate(0, " + height1 + ")")
-  //     .attr("class", "x-axis-case")
-  //     .style("color", "darkred")
-  //     .call(xAxis_case)
-  //     .selectAll("text")
-  //     .style("text-anchor", "end")
-  //     .attr("dx", "-0.8em")
-  //     .attr("dy", ".015em")
-  //     .attr("transform", "rotate(-65)");
+    var valueline = d3
+      .line()
+      .x(function (d) {
+        return xScale(d[3]);
+      })
+      .y(function (d) {
+        return yScale_new_case(d[6]);
+      });
 
-  //   cases
-  //     .append("g")
-  //     .attr("class", "y-axis")
-  //     .style("color", "darkred")
-  //     .call(yAxis_new_case);
+    cases
+      .append("path")
+      .data([filtered_data])
+      .attr("class", "line")
+      .attr("d", valueline);
+  }
 
-  //   cases
-  //     .selectAll(".bar")
-  //     .data(filtered_data)
-  //     .enter()
-  //     .append("rect")
-  //     .attr("class", "bar")
-  //     .attr("x", function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .attr("y", function (d) {
-  //       return yScale_new_case(d[5]);
-  //     })
-  //     .attr("width", width / filtered_data.length)
-  //     .attr("height", (d) => {
-  //       return height1 - yScale_new_case(d[5]);
-  //     })
-  //     .style("fill", "brown")
-  //     .style("stroke", "black")
-  //     .style("stroke-width", 0.5)
-  //     .on("mouseover", function (d) {
-  //       let date = d[3];
-  //       div.transition().duration(200).style("opacity", 0.8);
-  //       div
-  //         .html("Date: " + formatTime(d[3]) + "<br/>" + "New Cases: " + d[5])
-  //         .style("left", d3.event.pageX + "px")
-  //         .style("top", d3.event.pageY - 28 + "px");
-  //       d3.select(this).transition().style("fill", "salmon");
-  //       deaths.selectAll("rect").each(function (d) {
-  //         if (d[3] == date)
-  //           d3.select(this).transition().style("fill", "salmon");
-  //       });
-  //     })
-  //     .on("mouseout", function (d) {
-  //       d3.select(this).transition().style("fill", "brown");
-  //       deaths.selectAll("rect").each(function (d) {
-  //         d3.select(this).transition().style("fill", "brown");
-  //       });
-  //     });
-  //   cases
-  //     .selectAll(".point")
-  //     .data(filtered_data)
-  //     .enter()
-  //     .append("circle")
-  //     .attr("r", "2")
-  //     .attr("class", "point")
-  //     .attr("fill", "lightcoral")
-  //     .attr("stroke", "darkred")
-  //     .attr("stroke-width", 0.5)
-  //     .attr("cx", function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .attr("cy", function (d) {
-  //       return yScale_new_case(d[6]);
-  //     });
+  function draw_total_deaths() {
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_death = d3
+      .axisBottom(xScale)
+      .tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_total_death = d3
+      .scaleLinear()
+      .range([height, height2])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[7];
+        }),
+      ]);
+    let yAxis_total_death = d3
+      .axisLeft(yScale_total_death)
+      .ticks(5)
+      .tickSize(-width);
+    deaths
+      .append("g")
+      .attr("transform", "translate(0, " + height + ")")
+      .attr("class", "x-axis-death")
+      .style("color", "darkred")
+      .call(xAxis_death)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
 
-  //   var valueline = d3
-  //     .line()
-  //     .x(function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .y(function (d) {
-  //       return yScale_new_case(d[6]);
-  //     });
+    // deaths
+    //   .append("text")
+    //   .attr("class", "y-label")
+    //   .attr("text-anchor", "end")
+    //   .attr("x", -height2)
+    //   .attr("y", -25)
+    //   .attr("dy", ".75em")
+    //   .attr("font-size", "1 em")
+    //   .attr("transform", "rotate(-90)")
+    //   .text("count");
 
-  //   cases
-  //     .append("path")
-  //     .data([filtered_data])
-  //     .attr("class", "line")
-  //     .attr("d", valueline);
-  // }
+    deaths
+      .append("g")
+      .attr("class", "y-axis")
+      .style("color", "darkred")
+      .call(yAxis_total_death);
 
-  // function draw_total_deaths() {
-  //   deaths
-  //     .append("g")
-  //     .attr("transform", `translate(${40}, ${-5})`)
-  //     .append("text")
-  //     .style("text-anchor", "middle")
-  //     .attr("x", 6)
-  //     .attr("y", height2)
-  //     .text("count");
-  //   deaths
-  //     .append("g")
-  //     .attr("transform", "translate(0, " + height + ")")
-  //     .attr("class", "x-axis-death")
-  //     .style("color", "darkred")
-  //     .call(xAxis_death)
-  //     .selectAll("text")
-  //     .style("text-anchor", "end")
-  //     .attr("dx", "-0.8em")
-  //     .attr("dy", ".015em")
-  //     .attr("transform", "rotate(-65)");
+    deaths
+      .selectAll(".point")
+      .data(filtered_data)
+      .enter()
+      .append("circle")
+      .attr("class", "point")
+      .attr("r", "2")
+      .attr("fill", "lightcoral")
+      .attr("stroke", "darkred")
+      .attr("stroke-width", 0.5)
+      .attr("cx", function (d) {
+        return xScale(d[3]);
+      })
+      .attr("cy", function (d) {
+        return yScale_total_death(d[7]);
+      });
 
-  //   deaths
-  //     .append("text")
-  //     .attr("class", "y-label")
-  //     .attr("text-anchor", "end")
-  //     .attr("x", height2)
-  //     .attr("y", 6)
-  //     .attr("dy", ".75em")
-  //     .attr("transform", "rotate(-90)")
-  //     .text("count");
+    var valueline = d3
+      .line()
+      .x(function (d) {
+        return xScale(d[3]);
+      })
+      .y(function (d) {
+        return yScale_total_death(d[7]);
+      });
 
-  //   deaths
-  //     .append("g")
-  //     .attr("class", "y-axis")
-  //     .style("color", "darkred")
-  //     .call(yAxis_total_death);
+    deaths
+      .append("path")
+      .data([filtered_data])
+      .attr("class", "line")
+      .attr("d", valueline);
+  }
 
-  //   deaths
-  //     .selectAll(".point")
-  //     .data(filtered_data)
-  //     .enter()
-  //     .append("circle")
-  //     .attr("class", "point")
-  //     .attr("r", "2")
-  //     .attr("fill", "lightcoral")
-  //     .attr("stroke", "darkred")
-  //     .attr("stroke-width", 0.5)
-  //     .attr("cx", function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .attr("cy", function (d) {
-  //       return yScale_total_death(d[7]);
-  //     });
+  function draw_new_deaths() {
+    let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+    let xAxis_death = d3
+      .axisBottom(xScale)
+      .tickFormat(d3.timeFormat("%Y-%m-%d"));
+    let yScale_new_death = d3
+      .scaleLinear()
+      .range([height, height2])
+      .domain([
+        0,
+        d3.max(filtered_data, function (d) {
+          return d[8];
+        }),
+      ]);
+    let yAxis_new_death = d3
+      .axisLeft(yScale_new_death)
+      .ticks(5)
+      .tickSize(-width);
+    // deaths
+    //   .append("g")
+    //   .attr("transform", `translate(${40}, ${-5})`)
+    //   .append("text")
+    //   .style("text-anchor", "middle")
+    //   .attr("x", -height2)
+    //   .attr("y", -25)
+    //   .attr("transform", "rotate(-90)")
+    //   .attr("font-size", "1 em")
+    //   .text("count");
+    deaths
+      .append("g")
+      .attr("transform", "translate(0, " + height + ")")
+      .attr("class", "x-axis-death")
+      .style("color", "darkred")
+      .call(xAxis_death)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
+    deaths
+      .append("g")
+      .attr("class", "y-axis")
+      .style("color", "darkred")
+      .call(yAxis_new_death);
 
-  //   var valueline = d3
-  //     .line()
-  //     .x(function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .y(function (d) {
-  //       return yScale_total_death(d[7]);
-  //     });
+    deaths
+      .selectAll(".bar")
+      .data(filtered_data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", function (d) {
+        return xScale(d[3]);
+      })
+      .attr("y", function (d) {
+        return yScale_new_death(d[8]);
+      })
+      .attr("width", width / filtered_data.length)
+      .attr("height", (d) => {
+        return height - yScale_new_death(d[8]);
+      })
+      .style("fill", "brown")
+      .style("stroke", "black")
+      .style("stroke-width", 0.5)
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition().duration(200).style("opacity", 0.8);
+        div
+          .html("Date: " + formatTime(d[3]) + "<br/>" + "New Deaths: " + d[8])
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+        d3.select(this).transition().style("fill", "salmon");
+        cases.selectAll("rect").each(function (d) {
+          if (d[3] == date)
+            d3.select(this).transition().style("fill", "salmon");
+        });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "brown");
+        cases.selectAll("rect").each(function (d) {
+          d3.select(this).transition().style("fill", "brown");
+        });
+      });
 
-  //   deaths
-  //     .append("path")
-  //     .data([filtered_data])
-  //     .attr("class", "line")
-  //     .attr("d", valueline);
-  // }
+    deaths
+      .selectAll(".point")
+      .data(filtered_data)
+      .enter()
+      .append("circle")
+      .attr("r", "2")
+      .attr("class", "point")
+      .attr("fill", "lightpink")
+      .attr("stroke", "darkred")
+      .attr("stroke-width", 0.5)
+      .attr("cx", function (d) {
+        return xScale(d[3]);
+      })
+      .attr("cy", function (d) {
+        return yScale_new_death(d[9]);
+      })
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition().duration(200).style("opacity", 0.8);
+        div
+          .html(
+            "Date: " +
+              formatTime(d[3]) +
+              "<br/>" +
+              "Deaths 7-day Average: " +
+              d[9]
+          )
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+        d3.select(this).transition().style("fill", "black");
+        cases.selectAll("point").each(function (d) {
+          if (d[3] == date) d3.select(this).transition().style("fill", "black");
+        });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "lightpink");
+        cases.selectAll("point").each(function (d) {
+          d3.select(this).transition().style("fill", "lightpink");
+        });
+      });
 
-  // function draw_new_deaths() {
-  //   deaths
-  //     .append("g")
-  //     .attr("transform", `translate(${40}, ${-5})`)
-  //     .append("text")
-  //     .style("text-anchor", "middle")
-  //     .attr("x", 6)
-  //     .attr("y", height2)
-  //     .text("count");
-  //   deaths
-  //     .append("g")
-  //     .attr("transform", "translate(0, " + height + ")")
-  //     .attr("class", "x-axis-death")
-  //     .style("color", "darkred")
-  //     .call(xAxis_death)
-  //     .selectAll("text")
-  //     .style("text-anchor", "end")
-  //     .attr("dx", "-0.8em")
-  //     .attr("dy", ".015em")
-  //     .attr("transform", "rotate(-65)");
-  //   deaths
-  //     .append("g")
-  //     .attr("class", "y-axis")
-  //     .style("color", "darkred")
-  //     .call(yAxis_new_death);
+    var valueline = d3
+      .line()
+      .x(function (d) {
+        return xScale(d[3]);
+      })
+      .y(function (d) {
+        return yScale_new_death(d[9]);
+      });
 
-  //   deaths
-  //     .selectAll(".bar")
-  //     .data(filtered_data)
-  //     .enter()
-  //     .append("rect")
-  //     .attr("class", "bar")
-  //     .attr("x", function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .attr("y", function (d) {
-  //       return yScale_new_death(d[8]);
-  //     })
-  //     .attr("width", width / filtered_data.length)
-  //     .attr("height", (d) => {
-  //       return height - yScale_new_death(d[8]);
-  //     })
-  //     .style("fill", "brown")
-  //     .style("stroke", "black")
-  //     .style("stroke-width", 0.5)
-  //     .on("mouseover", function (d) {
-  //       let date = d[3];
-  //       div.transition().duration(200).style("opacity", 0.8);
-  //       div
-  //         .html("Date: " + formatTime(d[3]) + "<br/>" + "New Deaths: " + d[8])
-  //         .style("left", d3.event.pageX + "px")
-  //         .style("top", d3.event.pageY - 28 + "px");
-  //       d3.select(this).transition().style("fill", "salmon");
-  //       cases.selectAll("rect").each(function (d) {
-  //         if (d[3] == date)
-  //           d3.select(this).transition().style("fill", "salmon");
-  //       });
-  //     })
-  //     .on("mouseout", function (d) {
-  //       d3.select(this).transition().style("fill", "brown");
-  //       cases.selectAll("rect").each(function (d) {
-  //         d3.select(this).transition().style("fill", "brown");
-  //       });
-  //     });
-
-  //   deaths
-  //     .selectAll(".point")
-  //     .data(filtered_data)
-  //     .enter()
-  //     .append("circle")
-  //     .attr("r", "2")
-  //     .attr("class", "point")
-  //     .attr("fill", "lightpink")
-  //     .attr("stroke", "darkred")
-  //     .attr("stroke-width", 0.5)
-  //     .attr("cx", function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .attr("cy", function (d) {
-  //       return yScale_new_death(d[9]);
-  //     })
-  //     .on("mouseover", function (d) {
-  //       let date = d[3];
-  //       div.transition().duration(200).style("opacity", 0.8);
-  //       div
-  //         .html(
-  //           "Date: " +
-  //             formatTime(d[3]) +
-  //             "<br/>" +
-  //             "Deaths 7-day Average: " +
-  //             d[9]
-  //         )
-  //         .style("left", d3.event.pageX + "px")
-  //         .style("top", d3.event.pageY - 28 + "px");
-  //       d3.select(this).transition().style("fill", "black");
-  //       cases.selectAll("point").each(function (d) {
-  //         if (d[3] == date) d3.select(this).transition().style("fill", "black");
-  //       });
-  //     })
-  //     .on("mouseout", function (d) {
-  //       d3.select(this).transition().style("fill", "lightpink");
-  //       cases.selectAll("point").each(function (d) {
-  //         d3.select(this).transition().style("fill", "lightpink");
-  //       });
-  //     });
-
-  //   var valueline = d3
-  //     .line()
-  //     .x(function (d) {
-  //       return xScale(d[3]);
-  //     })
-  //     .y(function (d) {
-  //       return yScale_new_death(d[9]);
-  //     });
-
-  //   deaths
-  //     .append("path")
-  //     .data([filtered_data])
-  //     .attr("class", "line")
-  //     .attr("d", valueline);
-  // }
+    deaths
+      .append("path")
+      .data([filtered_data])
+      .attr("class", "line")
+      .attr("d", valueline);
+  }
+  ///////////////////////////////////////////////////
 
   function getKeyByValue(object, value) {
     return Object.keys(object).find((key) => object[key] === value);
   }
 }
+
+////////////////////////////////////////////
+
+/////////////////////////////////////////////
 
 function drawBrush1(dataUnhandled, country) {
   var data = dataUnhandled.filter((c) => c.location === country);
