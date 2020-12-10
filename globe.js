@@ -516,6 +516,16 @@ function start(totalCasesCountries, data, data2) {
       return;
     }
     currentCountry = c;
+    currentData = data.filter(function (d) {
+      return d[2] == getKeyByValue(id, +currentCountry.id);
+    });
+    console.log(currentData[0]);
+    div.transition()		
+    .duration(200)		
+    .style("opacity", .8);		
+    div.html("Country: " + currentData[0][2] + "<br/>"  + "Population: " + currentData[0][35] + "<br/>"  + "GDP per Capita $: " + currentData[0][40])	
+          .style("left", (d3.event.pageX) + "px")		
+          .style("top", (d3.event.pageY - 28) + "px");
     stopRotation();
     render();
     enter(c);
@@ -587,6 +597,8 @@ function start(totalCasesCountries, data, data2) {
     d[7] = parseInt(d[7]) || 0;
     d[8] = parseInt(d[8]) || 0;
     d[9] = parseFloat(d[9]) || 0;
+    d[35] = parseInt(d[35]) || 0;
+    d[40] = parseFloat(d[40]) || 0;
   });
 
   var div = d3
@@ -659,46 +671,6 @@ function start(totalCasesCountries, data, data2) {
     });
   }
 
-  //Change of charts after zooming
-  function zoom(begin, end) {
-    var beginDate = new Date(minDate.getTime() + begin * 86400000);
-    var endDate = new Date(minDate.getTime() + end * 86400000);
-    xScale.domain([beginDate, endDate]);
-
-    var t1 = cases.transition().duration(100);
-    var t2 = deaths.transition().duration(100);
-    var size = end - begin;
-    var step = size / 10;
-    var ticks = [];
-    for (var i = 0; i <= 10; i++) {
-      var tick = new Date(beginDate.getTime() + step * i * 86400000);
-      ticks.push(tick);
-    }
-
-    xAxis_case.tickValues(ticks);
-    xAxis_death.tickValues(ticks);
-
-    t1.select(".x-axis-case").call(xAxis_case);
-    t2.select(".x-axis-death").call(xAxis_death);
-    draw_new_cases();
-    draw_new_deaths();
-  }
-  //Slider for changing the domain of the x-axis
-  $(function () {
-    $("#slider-range").slider({
-      range: true,
-      min: 0,
-      max: filtered_data.length,
-      values: [0, filtered_data.length],
-      slide: function (event, ui) {
-        // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
-        // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
-        var begin = d3.min([ui.values[0], filtered_data.length]);
-        var end = d3.max([ui.values[1], 0]);
-        zoom(begin, end);
-      },
-    });
-  });
 
   function draw_total_cases() {
     let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
