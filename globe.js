@@ -568,7 +568,7 @@ function start(totalCasesCountries, data) {
   ///////////////////////////////////////////////////
 
   var parseDate = d3.timeParse("%Y-%m-%d");
-
+  var formatTime = d3.timeFormat("%B %d, %Y");
   data.forEach((d) => {
     d[3] = parseDate(d[3]);
     d[4] = parseInt(d[4]) || 0;
@@ -653,45 +653,8 @@ function start(totalCasesCountries, data) {
       ]);
     let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
 
-    cases
-      .append("text")
-      .attr("class", "y-label")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .attr("text-anchor", "middle")
-      .attr("y", -6)
-      .attr("dy", ".75em")
-      .text("count");
-
-  cases
-      .append("g")
-      .attr("transform", "translate(0, " + height1 + ")")
-      .attr("class", "x-axis-case")
-      .style("color", "darkred")
-      .call(xAxis_case)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
-  deaths
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", 6)
-      .attr("y", height2)
-      .text("count");
-  deaths
-      .append("g")
-      .attr("transform", "translate(0, " + height + ")")
-      .attr("class", "x-axis-death")
-      .style("color", "darkred")
-      .call(xAxis_death)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+    
+  
 
     draw_new_cases();
     draw_new_deaths();
@@ -701,6 +664,7 @@ function start(totalCasesCountries, data) {
     if(this.value == "New"){
       d3.selectAll(".point").remove();
       d3.selectAll(".line").remove();
+      
       draw_new_cases();
       draw_new_deaths();
     }else{
@@ -759,7 +723,26 @@ function start(totalCasesCountries, data) {
   
 
   function draw_total_cases() {
-   
+    cases
+    .append("text")
+    .attr("class", "y-label")
+    .attr("transform", `translate(${40}, ${-5})`)
+    .attr("text-anchor", "middle")
+    .attr("y", -6)
+    .attr("dy", ".75em")
+    .text("count");
+
+  cases
+    .append("g")
+    .attr("transform", "translate(0, " + height1 + ")")
+    .attr("class", "x-axis-case")
+    .style("color", "darkred")
+    .call(xAxis_case)
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-0.8em")
+    .attr("dy", ".015em")
+    .attr("transform", "rotate(-65)");
   
     // cases
     //   .append("g")
@@ -793,7 +776,27 @@ function start(totalCasesCountries, data) {
       })
       .attr("cy", function (d) {
         return yScale_total_case(d[4]);
-      });
+      })
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition()		
+        .duration(200)		
+        .style("opacity", .8);		
+        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "Total Cases: " + d[4])	
+              .style("left", (d3.event.pageX) + "px")		
+              .style("top", (d3.event.pageY - 28) + "px");
+        d3.select(this).transition().style("fill", "black");
+        cases.selectAll("point").each(function(d){
+          if(d[3] == date) 
+              d3.select(this).transition().style("fill", "black");
+        });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "lightpink");
+        cases.selectAll("point").each(function(d){
+          d3.select(this).transition().style("fill", "lightpink");
+        });
+      })
 
     var valueline = d3
       .line()
@@ -812,14 +815,27 @@ function start(totalCasesCountries, data) {
   }
 
   function draw_new_cases() {
-    
-    // function make_y_grid() {
-    //   return d3.axisLeft(yScale).ticks(5);
-    // }
-    // cases
-    //   .attr("class", "grid")
-    //   .style("color", "lightgrey")
-    //   .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
+    cases
+      .append("text")
+      .attr("class", "y-label")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .attr("text-anchor", "middle")
+      .attr("y", -6)
+      .attr("dy", ".75em")
+      .text("count");
+
+  cases
+      .append("g")
+      .attr("transform", "translate(0, " + height1 + ")")
+      .attr("class", "x-axis-case")
+      .style("color", "darkred")
+      .call(xAxis_case)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
+
     
     cases
       .append("g")
@@ -843,16 +859,29 @@ function start(totalCasesCountries, data) {
       .attr("height", (d) => {
         return height1 - yScale_new_case(d[5]);
       })
-      .style("fill", "steelblue")
+      .style("fill", "brown")
       .style("stroke", "black")
       .style("stroke-width", 0.5)
-      .on("mouseover", function (event, d) {
-        d3.select(this).transition().style("fill", "red");
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition()		
+          .duration(200)		
+          .style("opacity", .8);		
+        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "New Cases: " + d[5])	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");						
+        d3.select(this).transition().style("fill", "salmon");
+        deaths.selectAll("rect").each(function(d){
+          if(d[3] == date) 
+              d3.select(this).transition().style("fill", "salmon");
+        });
       })
       .on("mouseout", function (d) {
-        d3.select(this).transition().style("fill", "steelblue");
+        d3.select(this).transition().style("fill", "brown");
+        deaths.selectAll("rect").each(function(d){
+          d3.select(this).transition().style("fill", "brown");
+        });
       });
-
     cases
       .selectAll(".point")
       .data(filtered_data)
@@ -884,11 +913,29 @@ function start(totalCasesCountries, data) {
       .data([filtered_data])
       .attr("class", "line")
       .attr("d", valueline);
-  }
+  };
 
   function draw_total_deaths() {
-
     
+    deaths
+      .append("g")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .attr("x", 6)
+      .attr("y", height2)
+      .text("count");
+  deaths
+      .append("g")
+      .attr("transform", "translate(0, " + height + ")")
+      .attr("class", "x-axis-death")
+      .style("color", "darkred")
+      .call(xAxis_death)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
 
     deaths
       .append("text")
@@ -900,13 +947,6 @@ function start(totalCasesCountries, data) {
       .attr("transform", "rotate(-90)")
       .text("count");
 
-    function make_y_grid() {
-      return d3.axisLeft(yScale_total_death).ticks(5);
-    }
-    deaths
-      .attr("class", "grid")
-      .style("color", "lightgrey")
-      .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
     
     deaths
       .append("g")
@@ -945,29 +985,29 @@ function start(totalCasesCountries, data) {
       .data([filtered_data])
       .attr("class", "line")
       .attr("d", valueline);
-  }
+  };
 
   function draw_new_deaths() {
     
-    
-    // function make_y_grid() {
-    //   return d3.axisLeft(yScale).ticks(5);
-    // }
-    // deaths
-    //   .attr("class", "grid")
-    //   .style("color", "lightgrey")
-    //   .call(make_y_grid().tickSize(-width, 0, 0).tickFormat(""));
-    // deaths
-    //   .append("g")
-    //   .attr("transform", "translate(0, " + height + ")")
-    //   .attr("class", "x-axis-death")
-    //   .style("color", "darkred")
-    //   .call(xAxis)
-    //   .selectAll("text")
-    //   .style("text-anchor", "end")
-    //   .attr("dx", "-0.8em")
-    //   .attr("dy", ".015em")
-    //   .attr("transform", "rotate(-65)");
+    deaths
+      .append("g")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .attr("x", 6)
+      .attr("y", height2)
+      .text("count");
+  deaths
+      .append("g")
+      .attr("transform", "translate(0, " + height + ")")
+      .attr("class", "x-axis-death")
+      .style("color", "darkred")
+      .call(xAxis_death)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-0.8em")
+      .attr("dy", ".015em")
+      .attr("transform", "rotate(-65)");
     deaths
       .append("g")
       .attr("class", "y-axis")
@@ -990,14 +1030,28 @@ function start(totalCasesCountries, data) {
       .attr("height", (d) => {
         return height - yScale_new_death(d[8]);
       })
-      .style("fill", "steelblue")
+      .style("fill", "brown")
       .style("stroke", "black")
       .style("stroke-width", 0.5)
-      .on("mouseover", function (event, d) {
-        d3.select(this).transition().style("fill", "red");
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition()		
+        .duration(200)		
+        .style("opacity", .8);		
+        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "New Deaths: " + d[8])	
+              .style("left", (d3.event.pageX) + "px")		
+              .style("top", (d3.event.pageY - 28) + "px");
+        d3.select(this).transition().style("fill", "salmon");
+        cases.selectAll("rect").each(function(d){
+          if(d[3] == date) 
+              d3.select(this).transition().style("fill", "salmon");
+        })
       })
       .on("mouseout", function (d) {
-        d3.select(this).transition().style("fill", "steelblue");
+        d3.select(this).transition().style("fill", "brown");
+        cases.selectAll("rect").each(function(d){
+          d3.select(this).transition().style("fill", "brown");
+        });
       });
 
     deaths
@@ -1007,7 +1061,7 @@ function start(totalCasesCountries, data) {
       .append("circle")
       .attr("r", "2")
       .attr("class", "point")
-      .attr("fill", "lightcoral")
+      .attr("fill", "lightpink")
       .attr("stroke", "darkred")
       .attr("stroke-width", 0.5)
       .attr("cx", function (d) {
@@ -1015,6 +1069,26 @@ function start(totalCasesCountries, data) {
       })
       .attr("cy", function (d) {
         return yScale_new_death(d[9]);
+      })
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition()		
+        .duration(200)		
+        .style("opacity", .8);		
+        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "Deaths 7-day Average: " + d[9])	
+              .style("left", (d3.event.pageX) + "px")		
+              .style("top", (d3.event.pageY - 28) + "px");
+        d3.select(this).transition().style("fill", "black");
+        cases.selectAll("point").each(function(d){
+          if(d[3] == date) 
+              d3.select(this).transition().style("fill", "black");
+        })
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "lightpink");
+        cases.selectAll("point").each(function(d){
+          d3.select(this).transition().style("fill", "lightpink");
+        });
       });
 
     var valueline = d3
@@ -1031,9 +1105,11 @@ function start(totalCasesCountries, data) {
       .data([filtered_data])
       .attr("class", "line")
       .attr("d", valueline);
-  }
-}
+  };
 
-function getKeyByValue(object, value) {
-  return Object.keys(object).find((key) => object[key] === value);
+
+  function getKeyByValue(object, value) {
+    return Object.keys(object).find((key) => object[key] === value);
+  };
+
 }

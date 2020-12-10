@@ -29,15 +29,15 @@ div.tooltip {
     position: absolute;
     text-align: center;
     opacity: 0;
-    width: 80px;
-    height: 28px;
+    width: 200px;
+    height: 60px;
     padding: 2px;
-    font: 12px sans-serif;
-    background: rgb(243, 239, 22);
+    font: 16px sans-serif;
+    background: rgb(179,112,85);
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
-    color: salmon;
+    color: rgb(94, 39, 23);
   }
   
   body {
@@ -61,16 +61,16 @@ div.tooltip {
   }
   
   .bar {
-    fill: steelblue;
+    fill: brown;
   }
   
   .point{
-    fill: lightcoral;
+    fill: lightpink;
   }
   
   .line {
     fill: none;
-    stroke: crimson;
+    stroke: rgb(37, 2, 9);
     stroke-width: 1px;
   }
   
