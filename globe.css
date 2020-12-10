@@ -60,6 +60,7 @@ div.tooltip {
   body {
     font-size:1em;
     font-family: sans-serif;
+    color: white;
   }
   
   h2 {
@@ -68,7 +69,7 @@ div.tooltip {
   }
   
   h1{
-    color: black;
+    color:white;
     font-size: 3em;
   }
 
@@ -88,6 +89,7 @@ div.tooltip {
     /* font: 20px sans-serif; */
     background-repeat: no-repeat;
     background-size: cover;
+    stroke: white;
   }
   
   .bar {
@@ -100,33 +102,43 @@ div.tooltip {
   
   .line {
     fill: none;
-    stroke: rgb(37, 2, 9);
+    stroke: white;
     stroke-width: 1px;
   }
   
   .y-label{
     color: crimson;
+    font: white;
     /* font-size: 2em; */
   }
   
   
   .x-axis-case {
     font-style:italic;
-    color: darkslateblue;
+    color: white;
+    stroke: white;
     
+  }
+  .x-axis-case path{
+    stroke: white;
   }
   .x-axis-death {
     font-style:italic;
-    color: darkslateblue;
-    
+    color: white;
+    stroke: white;
+  }
+  .x-axis-death path{
+    stroke: white;
   }
   .y-axis {
     font-style: italic;
-    color: darkslateblue;
+    color: white;
+    stroke: white;
   }
   
   .y-axis path{
     stroke-width: 2px;
+    color: white;
   }
   
   input[type=radio] {
