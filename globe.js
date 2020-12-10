@@ -707,7 +707,7 @@ function start(totalCasesCountries, data, data2) {
       .attr("dy", ".75em")
       .attr("transform", "rotate(-90)")
       .attr("font-size", "1 em")
-      .text("count");
+      .text("Number of Total Cases");
 
     cases
       .append("g")
@@ -803,7 +803,7 @@ function start(totalCasesCountries, data, data2) {
       .attr("dy", ".75em")
       .attr("transform", "rotate(-90)")
       .attr("font-size", "0.5 em")
-      .text("count");
+      .text("Number of New Cases");
 
     cases
       .append("g")
@@ -924,7 +924,17 @@ function start(totalCasesCountries, data, data2) {
       .attr("dx", "-0.8em")
       .attr("dy", ".015em")
       .attr("transform", "rotate(-65)");
-
+    deaths
+      .append("text")
+      .attr("class", "y-label")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .attr("text-anchor", "end")
+      .attr("y", -80)
+      .attr("x", -height2+50)
+      .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .attr("font-size", "1 em")
+      .text("Number of Total Deaths");
     deaths
       .append("g")
       .attr("class", "y-axis")
@@ -1012,6 +1022,17 @@ function start(totalCasesCountries, data, data2) {
       .attr("dx", "-0.8em")
       .attr("dy", ".015em")
       .attr("transform", "rotate(-65)");
+    deaths
+      .append("text")
+      .attr("class", "y-label")
+      .attr("transform", `translate(${40}, ${-5})`)
+      .attr("text-anchor", "end")
+      .attr("y", -80)
+      .attr("x", -height2)
+      .attr("dy", ".75em")
+      .attr("transform", "rotate(-90)")
+      .attr("font-size", "1 em")
+      .text("Number of New Deaths");
     deaths
       .append("g")
       .attr("class", "y-axis")
