@@ -634,13 +634,13 @@ function start(totalCasesCountries, data, data2) {
     .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
   var filtered_data = data.filter(function (d) {
-    return d[2] == "United States";
+    return d[2] == "World";
   });
 
   var minDate = filtered_data[0][3],
     maxDate = filtered_data[filtered_data.length - 1][3];
 
-  draw_charts("United States");
+  draw_charts("World");
 
   function draw_charts(country) {
     filtered_data = data.filter(function (d) {
