@@ -248,7 +248,7 @@ function start(totalCasesCountries, data, data2) {
   // ms to wait after dragging before auto-rotating
   var rotationDelay = 3000;
   // scale of the globe (not the canvas element)
-  var scaleFactor = 1.0;
+  var scaleFactor = 0.9;
   // autorotation speed
   var degPerSec = 9;
   // start angles
@@ -281,7 +281,7 @@ function start(totalCasesCountries, data, data2) {
 
   var colorWater = "black";
   var colorLand = "#a00";
-  var colorGraticule = "black";
+  var colorGraticule = "#d0040b";
   var colorCountry = "#FFFF66";
 
   //
@@ -520,12 +520,21 @@ function start(totalCasesCountries, data, data2) {
       return d[2] == getKeyByValue(id, +currentCountry.id);
     });
     console.log(currentData[0]);
-    div.transition()		
-    .duration(200)		
-    .style("opacity", .8);		
-    div.html("Country: " + currentData[0][2] + "<br/>"  + "Population: " + currentData[0][35] + "<br/>"  + "GDP per Capita $: " + currentData[0][40])	
-          .style("left", (d3.event.pageX) + "px")		
-          .style("top", (d3.event.pageY - 28) + "px");
+    div.transition().duration(200).style("opacity", 1.0);
+    div
+      .html(
+        "<h3 style='margin:10px auto; opacity:1'><u>" +
+          currentData[0][2] +
+          "</u></h3><br/>" +
+          "<h5><b>Population</b><br/>" +
+          currentData[0][35] +
+          "</h5>" +
+          "<h5><b>GDP</b><br>" +
+          currentData[0][40] +
+          "</h5>"
+      )
+      .style("left", d3.event.pageX + "px")
+      .style("top", d3.event.pageY - 28 + "px");
     stopRotation();
     render();
     enter(c);
@@ -670,7 +679,6 @@ function start(totalCasesCountries, data, data2) {
       }
     });
   }
-
 
   function draw_total_cases() {
     let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
@@ -1168,8 +1176,6 @@ function drawBrush1(dataUnhandled, country) {
       return y(+d.total_cases_per_million);
     });
 
-  console.log(area);
-
   var area2 = d3
     .area()
     .curve(d3.curveMonotoneX)
@@ -1337,8 +1343,6 @@ function drawBrush2(dataUnhandled, country) {
     .y1(function (d) {
       return y(+d.total_deaths_per_million);
     });
-
-  console.log(area);
 
   var area2 = d3
     .area()

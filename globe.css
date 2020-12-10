@@ -1,7 +1,22 @@
 html, body {
     margin: 0;
-    padding: 0;
-    background: white;
+    padding: 5px 2%;
+    background-color: black;
+    text-align: center;
+}
+
+h3 {
+  color: white;
+  opacity: 0.8;
+  font-size: 30px;
+  margin: 0;
+}
+
+h5{
+  color: white;
+  opacity: 0.8;
+  font-size: 18px;
+  margin: 10px;
 }
 
 .globe-container {
@@ -16,10 +31,9 @@ html, body {
 }
   
 #current {
-    position: absolute;
-    color: black;
+    /* position: absolute; */
+    color: white;
     font-family: sans-serif;
-    margin-left: 4%;
     margin-top: 4%;
 }
 
@@ -28,16 +42,19 @@ html, body {
 div.tooltip {
     position: absolute;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     opacity: 0;
-    width: 240px;
-    height: 60px;
-    padding: 2px;
+    width: 220px;
+    height: 250px;
+    margin: 30px;
     font: 16px sans-serif;
-    background: rgb(189, 134, 112);
-    border: 0px;
+    background: #cc0000;;
     border-radius: 8px;
     pointer-events: none;
-    color: brown;
+    color: white;
   }
   
   body {
@@ -74,7 +91,7 @@ div.tooltip {
   }
   
   .bar {
-    fill: brown;
+    fill:  #940707;
   }
   
   .point{
@@ -119,7 +136,8 @@ div.tooltip {
   } 
   
   label {
-    color: rgb(90, 19, 19);
+    color: white;
+    border: 2px solid white;
     display: inline-block;
     cursor: pointer;
     font-weight: bold;

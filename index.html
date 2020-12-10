@@ -24,11 +24,15 @@
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/ui-lightness/jquery-ui.css" type="text/css" media="all" />
 </head>
 <body>
+    <div id="title">
+    <h3>COVID-19</h3>
+        <h5>Click a country to see cases and deaths.</h5>
+    </div>
     <div>
         <div class="globe-container">
-        <h1 id="current">World</h1> 
         <canvas id="globe"></canvas>
         </div>
+        <h1 id="current">World</h1> 
         <div id="radios">
             <input type="radio" id="option-one" name="chartSelection" value = "New"><label for="option-one">New</label>
             <input type="radio" id="option-two" name="chartSelection" value = "Cumulative"><label for="option-two">Cumulative</label>
