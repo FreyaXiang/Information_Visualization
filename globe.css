@@ -4,7 +4,7 @@ html, body {
     background: white;
 }
 
-.container {
+.globe-container {
     display: flex;
     justify-content: space-between;
     /* padding-top: 20px; */
@@ -54,7 +54,19 @@ div.tooltip {
     color: black;
     font-size: 3em;
   }
+
+  .area {
+    fill: #940707;
+    stroke-width: 2px;
+    clip-path: url(#clip);
+  }
   
+  .zoom {
+    cursor: move;
+    fill: none;
+    pointer-events: all;
+  }
+/*   
   svg {
     background-repeat: no-repeat;
     background-size: cover;
@@ -171,7 +183,7 @@ div.tooltip {
   .dropdown-content a:hover {background-color: #ddd}
   
   /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-  .show {display:block;}
+  .show {display:block;} 
   
   
   

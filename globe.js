@@ -219,13 +219,16 @@ const id = {
 };
 
 // Loading data
-var data;
+var data, data2;
 $.ajax({
   type: "GET",
   url: "https://covid.ourworldindata.org/data/owid-covid-data.csv",
   dataType: "text",
   success: function (response) {
     data = $.csv.toArrays(response);
+    data2 = $.csv.toObjects(response);
+    drawBrush1(data2, "Canada");
+    drawBrush2(data2, "Canada");
     // total cases and color scale
     var totalCasesCountries = {};
     data.forEach((col) => {
@@ -234,13 +237,13 @@ $.ajax({
     delete totalCasesCountries[-100];
     delete totalCasesCountries[-101];
     delete totalCasesCountries[-102];
-    start(totalCasesCountries, data);
+    start(totalCasesCountries, data, data2); // data is arrray, data2 is object
     // console.log(totalCasesCountries);
     // drawCharts(data);
   },
 });
 
-function start(totalCasesCountries, data) {
+function start(totalCasesCountries, data, data2) {
   // Rotating globe
   // ms to wait after dragging before auto-rotating
   var rotationDelay = 3000;
@@ -294,6 +297,10 @@ function start(totalCasesCountries, data) {
 
   function leave(country) {
     current.text("World");
+    document.getElementById("brush1").innerHTML = "";
+    document.getElementById("brush2").innerHTML = "";
+    drawBrush1(data2, "World");
+    drawBrush2(data2, "World");
   }
 
   //
@@ -512,10 +519,14 @@ function start(totalCasesCountries, data) {
     stopRotation();
     render();
     enter(c);
+    document.getElementById("brush1").innerHTML = "";
+    document.getElementById("brush2").innerHTML = "";
+    drawBrush1(data2, getKeyByValue(id, +currentCountry.id));
+    drawBrush2(data2, getKeyByValue(id, +currentCountry.id));
     // d3.select("g").remove();
     // draw_new_cases(getKeyByValue(id, +currentCountry.id));
     // draw_new_deaths(getKeyByValue(id, +currentCountry.id));
-    // console.log(getKeyByValue(id, +currentCountry.id));
+    console.log(getKeyByValue(id, +currentCountry.id));
   }
 
   function getCountry(event) {
@@ -567,549 +578,877 @@ function start(totalCasesCountries, data) {
 
   ///////////////////////////////////////////////////
 
-  var parseDate = d3.timeParse("%Y-%m-%d");
-  var formatTime = d3.timeFormat("%B %d, %Y");
-  data.forEach((d) => {
-    d[3] = parseDate(d[3]);
-    d[4] = parseInt(d[4]) || 0;
-    d[5] = parseInt(d[5]) || 0;
-    d[6] = parseFloat(d[6]) || 0;
-    d[7] = parseInt(d[7]) || 0;
-    d[8] = parseInt(d[8]) || 0;
-    d[9] = parseFloat(d[9]) || 0;
-  });
+  // var parseDate = d3.timeParse("%Y-%m-%d");
+  // var formatTime = d3.timeFormat("%B %d, %Y");
+  // data.forEach((d) => {
+  //   d[3] = parseDate(d[3]);
+  //   d[4] = parseInt(d[4]) || 0;
+  //   d[5] = parseInt(d[5]) || 0;
+  //   d[6] = parseFloat(d[6]) || 0;
+  //   d[7] = parseInt(d[7]) || 0;
+  //   d[8] = parseInt(d[8]) || 0;
+  //   d[9] = parseFloat(d[9]) || 0;
+  // });
 
-  var div = d3
-    .select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
-  var svg = d3.select("svg");
-  var margin = 180;
-  var gap_between_views = 150;
-  var width = svg.attr("width") - margin;
-  var height = svg.attr("height") - margin;
-  var height1 = 0.5 * height - 0.5 * gap_between_views;
-  var height2 = 0.5 * height + 0.5 * gap_between_views;
-  let cases = svg
-    .append("g")
-    .attr("class", "casesChart")
-    .attr("transform", "translate(" + 100 + "," + 100 + ")");
+  // var div = d3
+  //   .select("body")
+  //   .append("div")
+  //   .attr("class", "tooltip")
+  //   .style("opacity", 0);
+  // var svg = d3.select("#svg2");
+  // var margin = 180;
+  // var gap_between_views = 150;
+  // var width = svg.attr("width") - margin;
+  // var height = svg.attr("height") - margin;
+  // var height1 = 0.5 * height - 0.5 * gap_between_views;
+  // var height2 = 0.5 * height + 0.5 * gap_between_views;
+  // let cases = svg
+  //   .append("g")
+  //   .attr("class", "casesChart")
+  //   .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
-  let deaths = svg
-    .append("g")
-    .attr("class", "deathsChart")
-    .attr("transform", "translate(" + 100 + "," + 100 + ")");
-  filtered_data = data.filter(function (d) {
-    return d[2] == current.text();
-  });
-  var minDate = filtered_data[0][3],
-  maxDate = filtered_data[filtered_data.length - 1][3];
-  let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
-  let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
-  let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+  // let deaths = svg
+  //   .append("g")
+  //   .attr("class", "deathsChart")
+  //   .attr("transform", "translate(" + 100 + "," + 100 + ")");
+  // filtered_data = data.filter(function (d) {
+  //   return d[2] == current.text();
+  // });
+  // var minDate = filtered_data[0][3],
+  //   maxDate = filtered_data[filtered_data.length - 1][3];
+  // let xScale = d3.scaleTime().range([0, width]).domain([minDate, maxDate]);
+  // let xAxis_case = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
+  // let xAxis_death = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y-%m-%d"));
 
-  let yScale_total_case = d3
-      .scaleLinear()
-      .range([height1, 0])
-      .domain([
-        0, 
-        d3.max(filtered_data, function (d) {
-          return d[4];
-        }),
-      ]);
-    let yAxis_total_case = d3.axisLeft(yScale_total_case).ticks(5).tickSize(-100);
+  // let yScale_total_case = d3
+  //   .scaleLinear()
+  //   .range([height1, 0])
+  //   .domain([
+  //     0,
+  //     d3.max(filtered_data, function (d) {
+  //       return d[4];
+  //     }),
+  //   ]);
+  // let yAxis_total_case = d3.axisLeft(yScale_total_case).ticks(5).tickSize(-100);
 
-    let yScale_new_case = d3
-      .scaleLinear()
-      .range([height1, 0])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[5];
-        }),
-      ]);
-    let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
+  // let yScale_new_case = d3
+  //   .scaleLinear()
+  //   .range([height1, 0])
+  //   .domain([
+  //     0,
+  //     d3.max(filtered_data, function (d) {
+  //       return d[5];
+  //     }),
+  //   ]);
+  // let yAxis_new_case = d3.axisLeft(yScale_new_case).ticks(5).tickSize(-width);
 
-    let yScale_total_death = d3
-      .scaleLinear()
-      .range([height, height2])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[7];
-        }),
-      ]);
-    let yAxis_total_death = d3.axisLeft(yScale_total_death).ticks(5).tickSize(-width);
+  // let yScale_total_death = d3
+  //   .scaleLinear()
+  //   .range([height, height2])
+  //   .domain([
+  //     0,
+  //     d3.max(filtered_data, function (d) {
+  //       return d[7];
+  //     }),
+  //   ]);
+  // let yAxis_total_death = d3
+  //   .axisLeft(yScale_total_death)
+  //   .ticks(5)
+  //   .tickSize(-width);
 
-    let yScale_new_death = d3
-      .scaleLinear()
-      .range([height, height2])
-      .domain([
-        0,
-        d3.max(filtered_data, function (d) {
-          return d[8];
-        }),
-      ]);
-    let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
+  // let yScale_new_death = d3
+  //   .scaleLinear()
+  //   .range([height, height2])
+  //   .domain([
+  //     0,
+  //     d3.max(filtered_data, function (d) {
+  //       return d[8];
+  //     }),
+  //   ]);
+  // let yAxis_new_death = d3.axisLeft(yScale_new_death).ticks(5).tickSize(-width);
 
-    
-  
+  // draw_new_cases();
+  // draw_new_deaths();
 
-    draw_new_cases();
-    draw_new_deaths();
+  // //Radio Button
+  // d3.selectAll("input[name='chartSelection']").on("change", function () {
+  //   if (this.value == "New") {
+  //     d3.selectAll(".point").remove();
+  //     d3.selectAll(".line").remove();
 
-  //Radio Button
-  d3.selectAll(("input[name='chartSelection']")).on("change", function() {
-    if(this.value == "New"){
-      d3.selectAll(".point").remove();
-      d3.selectAll(".line").remove();
-      
-      draw_new_cases();
-      draw_new_deaths();
-    }else{
-      d3.selectAll(".point").remove();
-      d3.selectAll(".line").remove();
-      d3.selectAll(".bar").remove();
-      draw_total_cases();
-      draw_total_deaths();
-    }
-  });
-  
-  
-  //Change of charts after zooming
-  function zoom(begin, end) {
-    var beginDate = new Date(minDate.getTime() + begin *86400000);
-    var endDate = new Date(minDate.getTime() + end * 86400000);
-    xScale.domain([beginDate, endDate]);
+  //     draw_new_cases();
+  //     draw_new_deaths();
+  //   } else {
+  //     d3.selectAll(".point").remove();
+  //     d3.selectAll(".line").remove();
+  //     d3.selectAll(".bar").remove();
+  //     draw_total_cases();
+  //     draw_total_deaths();
+  //   }
+  // });
 
-    var t1 = cases.transition().duration(100);
-    var t2 = deaths.transition().duration(100);
-    var size = end - begin
-    var step = size / 10;
-    var ticks = [];
-    for (var i = 0; i <= 10; i++) {
-      var tick = new Date(beginDate.getTime() + step * i * 86400000);
-      ticks.push(tick);
-    }
-    
-    xAxis_case.tickValues(ticks);
-    xAxis_death.tickValues(ticks);
+  // //Change of charts after zooming
+  // function zoom(begin, end) {
+  //   var beginDate = new Date(minDate.getTime() + begin * 86400000);
+  //   var endDate = new Date(minDate.getTime() + end * 86400000);
+  //   xScale.domain([beginDate, endDate]);
 
-    t1.select(".x-axis-case").call(xAxis_case);
-    t2.select(".x-axis-death").call(xAxis_death);
-    draw_new_cases();
-    draw_new_deaths();
+  //   var t1 = cases.transition().duration(100);
+  //   var t2 = deaths.transition().duration(100);
+  //   var size = end - begin;
+  //   var step = size / 10;
+  //   var ticks = [];
+  //   for (var i = 0; i <= 10; i++) {
+  //     var tick = new Date(beginDate.getTime() + step * i * 86400000);
+  //     ticks.push(tick);
+  //   }
 
-  }
-  //Slider for changing the domain of the x-axis
-  $(function() {
-        $( "#slider-range" ).slider({
-            range: true,
-            min: 0,
-            max: filtered_data.length,
-            values: [0, filtered_data.length],
-            slide: function(event, ui ) {
-              // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
-              // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
-              var begin = d3.min([ui.values[0], filtered_data.length]);
-              var end = d3.max([ui.values[1], 0]);
-              zoom(begin, end);
-            }
-        });
-    });
-  
+  //   xAxis_case.tickValues(ticks);
+  //   xAxis_death.tickValues(ticks);
 
-  
+  //   t1.select(".x-axis-case").call(xAxis_case);
+  //   t2.select(".x-axis-death").call(xAxis_death);
+  //   draw_new_cases();
+  //   draw_new_deaths();
+  // }
+  // //Slider for changing the domain of the x-axis
+  // $(function () {
+  //   $("#slider-range").slider({
+  //     range: true,
+  //     min: 0,
+  //     max: filtered_data.length,
+  //     values: [0, filtered_data.length],
+  //     slide: function (event, ui) {
+  //       // var beginDate = new Date(minDate.getTime()+d3.min([ui.values[0], filtered_data.length])* 86400000);
+  //       // var endDate = new Date(minDate.getTime()+d3.max([ui.values[1], 0])*86400000);
+  //       var begin = d3.min([ui.values[0], filtered_data.length]);
+  //       var end = d3.max([ui.values[1], 0]);
+  //       zoom(begin, end);
+  //     },
+  //   });
+  // });
 
-  function draw_total_cases() {
-    cases
-    .append("text")
-    .attr("class", "y-label")
-    .attr("transform", `translate(${40}, ${-5})`)
-    .attr("text-anchor", "middle")
-    .attr("y", -6)
-    .attr("dy", ".75em")
-    .text("count");
+  // function draw_total_cases() {
+  //   cases
+  //     .append("text")
+  //     .attr("class", "y-label")
+  //     .attr("transform", `translate(${40}, ${-5})`)
+  //     .attr("text-anchor", "middle")
+  //     .attr("y", -6)
+  //     .attr("dy", ".75em")
+  //     .text("count");
 
-  cases
-    .append("g")
-    .attr("transform", "translate(0, " + height1 + ")")
-    .attr("class", "x-axis-case")
-    .style("color", "darkred")
-    .call(xAxis_case)
-    .selectAll("text")
-    .style("text-anchor", "end")
-    .attr("dx", "-0.8em")
-    .attr("dy", ".015em")
-    .attr("transform", "rotate(-65)");
-  
-    // cases
-    //   .append("g")
-    //   .attr("transform", "translate(0, " + height1 + ")")
-    //   .attr("class", "x-axis-case")
-    //   .style("color", "darkred")
-    //   .call(xAxis)
-    //   .selectAll("text")
-    //   .style("text-anchor", "end")
-    //   .attr("dx", "-0.8em")
-    //   .attr("dy", ".015em")
-    //   .attr("transform", "rotate(-65)");
-    cases
-      .append("g")
-      .attr("class", "y-axis")
-      .style("color", "darkred")
-      .call(yAxis_total_case);
+  //   cases
+  //     .append("g")
+  //     .attr("transform", "translate(0, " + height1 + ")")
+  //     .attr("class", "x-axis-case")
+  //     .style("color", "darkred")
+  //     .call(xAxis_case)
+  //     .selectAll("text")
+  //     .style("text-anchor", "end")
+  //     .attr("dx", "-0.8em")
+  //     .attr("dy", ".015em")
+  //     .attr("transform", "rotate(-65)");
 
-    cases
-      .selectAll(".point")
-      .data(filtered_data)
-      .enter()
-      .append("circle")
-      .attr("class", "point")
-      .attr("r", "2")
-      .attr("fill", "lightcoral")
-      .attr("stroke", "darkred")
-      .attr("stroke-width", 0.5)
-      .attr("cx", function (d) {
-        return xScale(d[3]);
-      })
-      .attr("cy", function (d) {
-        return yScale_total_case(d[4]);
-      })
-      .on("mouseover", function (d) {
-        let date = d[3];
-        div.transition()		
-        .duration(200)		
-        .style("opacity", .8);		
-        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "Total Cases: " + d[4])	
-              .style("left", (d3.event.pageX) + "px")		
-              .style("top", (d3.event.pageY - 28) + "px");
-        d3.select(this).transition().style("fill", "black");
-        cases.selectAll("point").each(function(d){
-          if(d[3] == date) 
-              d3.select(this).transition().style("fill", "black");
-        });
-      })
-      .on("mouseout", function (d) {
-        d3.select(this).transition().style("fill", "lightpink");
-        cases.selectAll("point").each(function(d){
-          d3.select(this).transition().style("fill", "lightpink");
-        });
-      })
+  //   // cases
+  //   //   .append("g")
+  //   //   .attr("transform", "translate(0, " + height1 + ")")
+  //   //   .attr("class", "x-axis-case")
+  //   //   .style("color", "darkred")
+  //   //   .call(xAxis)
+  //   //   .selectAll("text")
+  //   //   .style("text-anchor", "end")
+  //   //   .attr("dx", "-0.8em")
+  //   //   .attr("dy", ".015em")
+  //   //   .attr("transform", "rotate(-65)");
+  //   cases
+  //     .append("g")
+  //     .attr("class", "y-axis")
+  //     .style("color", "darkred")
+  //     .call(yAxis_total_case);
 
-    var valueline = d3
-      .line()
-      .x(function (d) {
-        return xScale(d[3]);
-      })
-      .y(function (d) {
-        return yScale_total_case(d[4]);
-      });
+  //   cases
+  //     .selectAll(".point")
+  //     .data(filtered_data)
+  //     .enter()
+  //     .append("circle")
+  //     .attr("class", "point")
+  //     .attr("r", "2")
+  //     .attr("fill", "lightcoral")
+  //     .attr("stroke", "darkred")
+  //     .attr("stroke-width", 0.5)
+  //     .attr("cx", function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .attr("cy", function (d) {
+  //       return yScale_total_case(d[4]);
+  //     })
+  //     .on("mouseover", function (d) {
+  //       let date = d[3];
+  //       div.transition().duration(200).style("opacity", 0.8);
+  //       div
+  //         .html("Date: " + formatTime(d[3]) + "<br/>" + "Total Cases: " + d[4])
+  //         .style("left", d3.event.pageX + "px")
+  //         .style("top", d3.event.pageY - 28 + "px");
+  //       d3.select(this).transition().style("fill", "black");
+  //       cases.selectAll("point").each(function (d) {
+  //         if (d[3] == date) d3.select(this).transition().style("fill", "black");
+  //       });
+  //     })
+  //     .on("mouseout", function (d) {
+  //       d3.select(this).transition().style("fill", "lightpink");
+  //       cases.selectAll("point").each(function (d) {
+  //         d3.select(this).transition().style("fill", "lightpink");
+  //       });
+  //     });
 
-    cases
-      .append("path")
-      .data([filtered_data])
-      .attr("class", "line")
-      .attr("d", valueline);
-  }
+  //   var valueline = d3
+  //     .line()
+  //     .x(function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .y(function (d) {
+  //       return yScale_total_case(d[4]);
+  //     });
 
-  function draw_new_cases() {
-    cases
-      .append("text")
-      .attr("class", "y-label")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .attr("text-anchor", "middle")
-      .attr("y", -6)
-      .attr("dy", ".75em")
-      .text("count");
+  //   cases
+  //     .append("path")
+  //     .data([filtered_data])
+  //     .attr("class", "line")
+  //     .attr("d", valueline);
+  // }
 
-  cases
-      .append("g")
-      .attr("transform", "translate(0, " + height1 + ")")
-      .attr("class", "x-axis-case")
-      .style("color", "darkred")
-      .call(xAxis_case)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+  // function draw_new_cases() {
+  //   cases
+  //     .append("text")
+  //     .attr("class", "y-label")
+  //     .attr("transform", `translate(${40}, ${-5})`)
+  //     .attr("text-anchor", "middle")
+  //     .attr("y", -6)
+  //     .attr("dy", ".75em")
+  //     .text("count");
 
-    
-    cases
-      .append("g")
-      .attr("class", "y-axis")
-      .style("color", "darkred")
-      .call(yAxis_new_case);
-  
-    cases
-      .selectAll(".bar")
-      .data(filtered_data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) {
-        return xScale(d[3]);
-      })
-      .attr("y", function (d) {
-        return yScale_new_case(d[5]);
-      })
-      .attr("width", width / filtered_data.length)
-      .attr("height", (d) => {
-        return height1 - yScale_new_case(d[5]);
-      })
-      .style("fill", "brown")
-      .style("stroke", "black")
-      .style("stroke-width", 0.5)
-      .on("mouseover", function (d) {
-        let date = d[3];
-        div.transition()		
-          .duration(200)		
-          .style("opacity", .8);		
-        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "New Cases: " + d[5])	
-                .style("left", (d3.event.pageX) + "px")		
-                .style("top", (d3.event.pageY - 28) + "px");						
-        d3.select(this).transition().style("fill", "salmon");
-        deaths.selectAll("rect").each(function(d){
-          if(d[3] == date) 
-              d3.select(this).transition().style("fill", "salmon");
-        });
-      })
-      .on("mouseout", function (d) {
-        d3.select(this).transition().style("fill", "brown");
-        deaths.selectAll("rect").each(function(d){
-          d3.select(this).transition().style("fill", "brown");
-        });
-      });
-    cases
-      .selectAll(".point")
-      .data(filtered_data)
-      .enter()
-      .append("circle")
-      .attr("r", "2")
-      .attr("class", "point")
-      .attr("fill", "lightcoral")
-      .attr("stroke", "darkred")
-      .attr("stroke-width", 0.5)
-      .attr("cx", function (d) {
-        return xScale(d[3]);
-      })
-      .attr("cy", function (d) {
-        return yScale_new_case(d[6]);
-      });
+  //   cases
+  //     .append("g")
+  //     .attr("transform", "translate(0, " + height1 + ")")
+  //     .attr("class", "x-axis-case")
+  //     .style("color", "darkred")
+  //     .call(xAxis_case)
+  //     .selectAll("text")
+  //     .style("text-anchor", "end")
+  //     .attr("dx", "-0.8em")
+  //     .attr("dy", ".015em")
+  //     .attr("transform", "rotate(-65)");
 
-    var valueline = d3
-      .line()
-      .x(function (d) {
-        return xScale(d[3]);
-      })
-      .y(function (d) {
-        return yScale_new_case(d[6]);
-      });
+  //   cases
+  //     .append("g")
+  //     .attr("class", "y-axis")
+  //     .style("color", "darkred")
+  //     .call(yAxis_new_case);
 
-    cases
-      .append("path")
-      .data([filtered_data])
-      .attr("class", "line")
-      .attr("d", valueline);
-  };
+  //   cases
+  //     .selectAll(".bar")
+  //     .data(filtered_data)
+  //     .enter()
+  //     .append("rect")
+  //     .attr("class", "bar")
+  //     .attr("x", function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .attr("y", function (d) {
+  //       return yScale_new_case(d[5]);
+  //     })
+  //     .attr("width", width / filtered_data.length)
+  //     .attr("height", (d) => {
+  //       return height1 - yScale_new_case(d[5]);
+  //     })
+  //     .style("fill", "brown")
+  //     .style("stroke", "black")
+  //     .style("stroke-width", 0.5)
+  //     .on("mouseover", function (d) {
+  //       let date = d[3];
+  //       div.transition().duration(200).style("opacity", 0.8);
+  //       div
+  //         .html("Date: " + formatTime(d[3]) + "<br/>" + "New Cases: " + d[5])
+  //         .style("left", d3.event.pageX + "px")
+  //         .style("top", d3.event.pageY - 28 + "px");
+  //       d3.select(this).transition().style("fill", "salmon");
+  //       deaths.selectAll("rect").each(function (d) {
+  //         if (d[3] == date)
+  //           d3.select(this).transition().style("fill", "salmon");
+  //       });
+  //     })
+  //     .on("mouseout", function (d) {
+  //       d3.select(this).transition().style("fill", "brown");
+  //       deaths.selectAll("rect").each(function (d) {
+  //         d3.select(this).transition().style("fill", "brown");
+  //       });
+  //     });
+  //   cases
+  //     .selectAll(".point")
+  //     .data(filtered_data)
+  //     .enter()
+  //     .append("circle")
+  //     .attr("r", "2")
+  //     .attr("class", "point")
+  //     .attr("fill", "lightcoral")
+  //     .attr("stroke", "darkred")
+  //     .attr("stroke-width", 0.5)
+  //     .attr("cx", function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .attr("cy", function (d) {
+  //       return yScale_new_case(d[6]);
+  //     });
 
-  function draw_total_deaths() {
-    
-    deaths
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", 6)
-      .attr("y", height2)
-      .text("count");
-  deaths
-      .append("g")
-      .attr("transform", "translate(0, " + height + ")")
-      .attr("class", "x-axis-death")
-      .style("color", "darkred")
-      .call(xAxis_death)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
+  //   var valueline = d3
+  //     .line()
+  //     .x(function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .y(function (d) {
+  //       return yScale_new_case(d[6]);
+  //     });
 
-    deaths
-      .append("text")
-      .attr("class", "y-label")
-      .attr("text-anchor", "end")
-      .attr("x", height2)
-      .attr("y", 6)
-      .attr("dy", ".75em")
-      .attr("transform", "rotate(-90)")
-      .text("count");
+  //   cases
+  //     .append("path")
+  //     .data([filtered_data])
+  //     .attr("class", "line")
+  //     .attr("d", valueline);
+  // }
 
-    
-    deaths
-      .append("g")
-      .attr("class", "y-axis")
-      .style("color", "darkred")
-      .call(yAxis_total_death);
+  // function draw_total_deaths() {
+  //   deaths
+  //     .append("g")
+  //     .attr("transform", `translate(${40}, ${-5})`)
+  //     .append("text")
+  //     .style("text-anchor", "middle")
+  //     .attr("x", 6)
+  //     .attr("y", height2)
+  //     .text("count");
+  //   deaths
+  //     .append("g")
+  //     .attr("transform", "translate(0, " + height + ")")
+  //     .attr("class", "x-axis-death")
+  //     .style("color", "darkred")
+  //     .call(xAxis_death)
+  //     .selectAll("text")
+  //     .style("text-anchor", "end")
+  //     .attr("dx", "-0.8em")
+  //     .attr("dy", ".015em")
+  //     .attr("transform", "rotate(-65)");
 
-    deaths
-      .selectAll(".point")
-      .data(filtered_data)
-      .enter()
-      .append("circle")
-      .attr("class", "point")
-      .attr("r", "2")
-      .attr("fill", "lightcoral")
-      .attr("stroke", "darkred")
-      .attr("stroke-width", 0.5)
-      .attr("cx", function (d) {
-        return xScale(d[3]);
-      })
-      .attr("cy", function (d) {
-        return yScale_total_death(d[7]);
-      });
+  //   deaths
+  //     .append("text")
+  //     .attr("class", "y-label")
+  //     .attr("text-anchor", "end")
+  //     .attr("x", height2)
+  //     .attr("y", 6)
+  //     .attr("dy", ".75em")
+  //     .attr("transform", "rotate(-90)")
+  //     .text("count");
 
-    var valueline = d3
-      .line()
-      .x(function (d) {
-        return xScale(d[3]);
-      })
-      .y(function (d) {
-        return yScale_total_death(d[7]);
-      });
+  //   deaths
+  //     .append("g")
+  //     .attr("class", "y-axis")
+  //     .style("color", "darkred")
+  //     .call(yAxis_total_death);
 
-    deaths
-      .append("path")
-      .data([filtered_data])
-      .attr("class", "line")
-      .attr("d", valueline);
-  };
+  //   deaths
+  //     .selectAll(".point")
+  //     .data(filtered_data)
+  //     .enter()
+  //     .append("circle")
+  //     .attr("class", "point")
+  //     .attr("r", "2")
+  //     .attr("fill", "lightcoral")
+  //     .attr("stroke", "darkred")
+  //     .attr("stroke-width", 0.5)
+  //     .attr("cx", function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .attr("cy", function (d) {
+  //       return yScale_total_death(d[7]);
+  //     });
 
-  function draw_new_deaths() {
-    
-    deaths
-      .append("g")
-      .attr("transform", `translate(${40}, ${-5})`)
-      .append("text")
-      .style("text-anchor", "middle")
-      .attr("x", 6)
-      .attr("y", height2)
-      .text("count");
-  deaths
-      .append("g")
-      .attr("transform", "translate(0, " + height + ")")
-      .attr("class", "x-axis-death")
-      .style("color", "darkred")
-      .call(xAxis_death)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-0.8em")
-      .attr("dy", ".015em")
-      .attr("transform", "rotate(-65)");
-    deaths
-      .append("g")
-      .attr("class", "y-axis")
-      .style("color", "darkred")
-      .call(yAxis_new_death);
-    
-    deaths
-      .selectAll(".bar")
-      .data(filtered_data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) {
-        return xScale(d[3]);
-      })
-      .attr("y", function (d) {
-        return yScale_new_death(d[8]);
-      })
-      .attr("width", width / filtered_data.length)
-      .attr("height", (d) => {
-        return height - yScale_new_death(d[8]);
-      })
-      .style("fill", "brown")
-      .style("stroke", "black")
-      .style("stroke-width", 0.5)
-      .on("mouseover", function (d) {
-        let date = d[3];
-        div.transition()		
-        .duration(200)		
-        .style("opacity", .8);		
-        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "New Deaths: " + d[8])	
-              .style("left", (d3.event.pageX) + "px")		
-              .style("top", (d3.event.pageY - 28) + "px");
-        d3.select(this).transition().style("fill", "salmon");
-        cases.selectAll("rect").each(function(d){
-          if(d[3] == date) 
-              d3.select(this).transition().style("fill", "salmon");
-        })
-      })
-      .on("mouseout", function (d) {
-        d3.select(this).transition().style("fill", "brown");
-        cases.selectAll("rect").each(function(d){
-          d3.select(this).transition().style("fill", "brown");
-        });
-      });
+  //   var valueline = d3
+  //     .line()
+  //     .x(function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .y(function (d) {
+  //       return yScale_total_death(d[7]);
+  //     });
 
-    deaths
-      .selectAll(".point")
-      .data(filtered_data)
-      .enter()
-      .append("circle")
-      .attr("r", "2")
-      .attr("class", "point")
-      .attr("fill", "lightpink")
-      .attr("stroke", "darkred")
-      .attr("stroke-width", 0.5)
-      .attr("cx", function (d) {
-        return xScale(d[3]);
-      })
-      .attr("cy", function (d) {
-        return yScale_new_death(d[9]);
-      })
-      .on("mouseover", function (d) {
-        let date = d[3];
-        div.transition()		
-        .duration(200)		
-        .style("opacity", .8);		
-        div.html("Date: " + formatTime(d[3]) + "<br/>"  + "Deaths 7-day Average: " + d[9])	
-              .style("left", (d3.event.pageX) + "px")		
-              .style("top", (d3.event.pageY - 28) + "px");
-        d3.select(this).transition().style("fill", "black");
-        cases.selectAll("point").each(function(d){
-          if(d[3] == date) 
-              d3.select(this).transition().style("fill", "black");
-        })
-      })
-      .on("mouseout", function (d) {
-        d3.select(this).transition().style("fill", "lightpink");
-        cases.selectAll("point").each(function(d){
-          d3.select(this).transition().style("fill", "lightpink");
-        });
-      });
+  //   deaths
+  //     .append("path")
+  //     .data([filtered_data])
+  //     .attr("class", "line")
+  //     .attr("d", valueline);
+  // }
 
-    var valueline = d3
-      .line()
-      .x(function (d) {
-        return xScale(d[3]);
-      })
-      .y(function (d) {
-        return yScale_new_death(d[9]);
-      });
+  // function draw_new_deaths() {
+  //   deaths
+  //     .append("g")
+  //     .attr("transform", `translate(${40}, ${-5})`)
+  //     .append("text")
+  //     .style("text-anchor", "middle")
+  //     .attr("x", 6)
+  //     .attr("y", height2)
+  //     .text("count");
+  //   deaths
+  //     .append("g")
+  //     .attr("transform", "translate(0, " + height + ")")
+  //     .attr("class", "x-axis-death")
+  //     .style("color", "darkred")
+  //     .call(xAxis_death)
+  //     .selectAll("text")
+  //     .style("text-anchor", "end")
+  //     .attr("dx", "-0.8em")
+  //     .attr("dy", ".015em")
+  //     .attr("transform", "rotate(-65)");
+  //   deaths
+  //     .append("g")
+  //     .attr("class", "y-axis")
+  //     .style("color", "darkred")
+  //     .call(yAxis_new_death);
 
-    deaths
-      .append("path")
-      .data([filtered_data])
-      .attr("class", "line")
-      .attr("d", valueline);
-  };
+  //   deaths
+  //     .selectAll(".bar")
+  //     .data(filtered_data)
+  //     .enter()
+  //     .append("rect")
+  //     .attr("class", "bar")
+  //     .attr("x", function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .attr("y", function (d) {
+  //       return yScale_new_death(d[8]);
+  //     })
+  //     .attr("width", width / filtered_data.length)
+  //     .attr("height", (d) => {
+  //       return height - yScale_new_death(d[8]);
+  //     })
+  //     .style("fill", "brown")
+  //     .style("stroke", "black")
+  //     .style("stroke-width", 0.5)
+  //     .on("mouseover", function (d) {
+  //       let date = d[3];
+  //       div.transition().duration(200).style("opacity", 0.8);
+  //       div
+  //         .html("Date: " + formatTime(d[3]) + "<br/>" + "New Deaths: " + d[8])
+  //         .style("left", d3.event.pageX + "px")
+  //         .style("top", d3.event.pageY - 28 + "px");
+  //       d3.select(this).transition().style("fill", "salmon");
+  //       cases.selectAll("rect").each(function (d) {
+  //         if (d[3] == date)
+  //           d3.select(this).transition().style("fill", "salmon");
+  //       });
+  //     })
+  //     .on("mouseout", function (d) {
+  //       d3.select(this).transition().style("fill", "brown");
+  //       cases.selectAll("rect").each(function (d) {
+  //         d3.select(this).transition().style("fill", "brown");
+  //       });
+  //     });
 
+  //   deaths
+  //     .selectAll(".point")
+  //     .data(filtered_data)
+  //     .enter()
+  //     .append("circle")
+  //     .attr("r", "2")
+  //     .attr("class", "point")
+  //     .attr("fill", "lightpink")
+  //     .attr("stroke", "darkred")
+  //     .attr("stroke-width", 0.5)
+  //     .attr("cx", function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .attr("cy", function (d) {
+  //       return yScale_new_death(d[9]);
+  //     })
+  //     .on("mouseover", function (d) {
+  //       let date = d[3];
+  //       div.transition().duration(200).style("opacity", 0.8);
+  //       div
+  //         .html(
+  //           "Date: " +
+  //             formatTime(d[3]) +
+  //             "<br/>" +
+  //             "Deaths 7-day Average: " +
+  //             d[9]
+  //         )
+  //         .style("left", d3.event.pageX + "px")
+  //         .style("top", d3.event.pageY - 28 + "px");
+  //       d3.select(this).transition().style("fill", "black");
+  //       cases.selectAll("point").each(function (d) {
+  //         if (d[3] == date) d3.select(this).transition().style("fill", "black");
+  //       });
+  //     })
+  //     .on("mouseout", function (d) {
+  //       d3.select(this).transition().style("fill", "lightpink");
+  //       cases.selectAll("point").each(function (d) {
+  //         d3.select(this).transition().style("fill", "lightpink");
+  //       });
+  //     });
+
+  //   var valueline = d3
+  //     .line()
+  //     .x(function (d) {
+  //       return xScale(d[3]);
+  //     })
+  //     .y(function (d) {
+  //       return yScale_new_death(d[9]);
+  //     });
+
+  //   deaths
+  //     .append("path")
+  //     .data([filtered_data])
+  //     .attr("class", "line")
+  //     .attr("d", valueline);
+  // }
 
   function getKeyByValue(object, value) {
     return Object.keys(object).find((key) => object[key] === value);
-  };
+  }
+}
 
+function drawBrush1(dataUnhandled, country) {
+  var data = dataUnhandled.filter((c) => c.location === country);
+  var svg = d3.select("#brush1"),
+    margin = { top: 20, right: 20, bottom: 110, left: 50 },
+    margin2 = { top: 280, right: 20, bottom: 30, left: 50 },
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+  var parseDate = d3.timeParse("%Y-%m-%d");
+
+  var x = d3.scaleTime().range([0, width]),
+    x2 = d3.scaleTime().range([0, width]),
+    y = d3.scaleLinear().range([height, 0]),
+    y2 = d3.scaleLinear().range([height2, 0]);
+
+  var xAxis = d3.axisBottom(x),
+    xAxis2 = d3.axisBottom(x2),
+    yAxis = d3.axisLeft(y);
+
+  var brush = d3
+    .brushX()
+    .extent([
+      [0, 0],
+      [width, height2],
+    ])
+    .on("brush end", brushed);
+
+  var zoom = d3
+    .zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([
+      [0, 0],
+      [width, height],
+    ])
+    .extent([
+      [0, 0],
+      [width, height],
+    ])
+    .on("zoom", zoomed);
+
+  var area = d3
+    .area()
+    .curve(d3.curveMonotoneX)
+    .x(function (d) {
+      return x(parseDate(d.date));
+    })
+    .y0(height)
+    .y1(function (d) {
+      return y(+d.total_cases_per_million);
+    });
+
+  console.log(area);
+
+  var area2 = d3
+    .area()
+    .curve(d3.curveMonotoneX)
+    .x(function (d) {
+      return x2(parseDate(d.date));
+    })
+    .y0(height2)
+    .y1(function (d) {
+      return y2(+d.total_cases_per_million);
+    });
+
+  svg
+    .append("defs")
+    .append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+  var focus = svg
+    .append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var context = svg
+    .append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+  x.domain(
+    d3.extent(data, function (d) {
+      return parseDate(d.date);
+    })
+  );
+  y.domain([
+    0,
+    d3.max(data, function (d) {
+      return +d.total_cases_per_million;
+    }),
+  ]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+
+  focus.append("path").datum(data).attr("class", "area").attr("d", area);
+
+  focus
+    .append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+  focus.append("g").attr("class", "axis axis--y").call(yAxis);
+
+  context.append("path").datum(data).attr("class", "area").attr("d", area2);
+
+  context
+    .append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height2 + ")")
+    .call(xAxis2);
+
+  context
+    .append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .call(brush.move, x.range());
+
+  svg
+    .append("rect")
+    .attr("class", "zoom")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .call(zoom);
+
+  svg
+    .append("text")
+    .attr("class", "y-label")
+    .attr("x", 0)
+    .attr("y", 80)
+    .attr("transform", "rotate(-90)")
+    .attr("text-anchor", "end")
+    .text("Total Cases Per Million");
+
+  function brushed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    var s = d3.event.selection || x2.range();
+    x.domain(s.map(x2.invert, x2));
+    focus.select(".area").attr("d", area);
+    focus.select(".axis--x").call(xAxis);
+    svg
+      .select(".zoom")
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.scale(width / (s[1] - s[0])).translate(-s[0], 0)
+      );
+
+    var svg2 = d3.select("#brush2");
+    svg2
+      .select(".zoom")
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.scale(width / (s[1] - s[0])).translate(-s[0], 0)
+      );
+  }
+
+  function zoomed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    var t = d3.event.transform;
+    x.domain(t.rescaleX(x2).domain());
+    focus.select(".area").attr("d", area);
+    focus.select(".axis--x").call(xAxis);
+    context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+  }
+}
+
+function drawBrush2(dataUnhandled, country) {
+  var data = dataUnhandled.filter((c) => c.location === country);
+  var svg = d3.select("#brush2"),
+    margin = { top: 20, right: 20, bottom: 110, left: 50 },
+    margin2 = { top: 280, right: 20, bottom: 30, left: 50 },
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+  var parseDate = d3.timeParse("%Y-%m-%d");
+
+  var x = d3.scaleTime().range([0, width]),
+    x2 = d3.scaleTime().range([0, width]),
+    y = d3.scaleLinear().range([height, 0]),
+    y2 = d3.scaleLinear().range([height2, 0]);
+
+  var xAxis = d3.axisBottom(x),
+    xAxis2 = d3.axisBottom(x2),
+    yAxis = d3.axisLeft(y);
+
+  var brush = d3
+    .brushX()
+    .extent([
+      [0, 0],
+      [width, height2],
+    ])
+    .on("brush end", brushed);
+
+  var zoom = d3
+    .zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([
+      [0, 0],
+      [width, height],
+    ])
+    .extent([
+      [0, 0],
+      [width, height],
+    ])
+    .on("zoom", zoomed);
+
+  var area = d3
+    .area()
+    .curve(d3.curveMonotoneX)
+    .x(function (d) {
+      return x(parseDate(d.date));
+    })
+    .y0(height)
+    .y1(function (d) {
+      return y(+d.total_deaths_per_million);
+    });
+
+  console.log(area);
+
+  var area2 = d3
+    .area()
+    .curve(d3.curveMonotoneX)
+    .x(function (d) {
+      return x2(parseDate(d.date));
+    })
+    .y0(height2)
+    .y1(function (d) {
+      return y2(+d.total_deaths_per_million);
+    });
+
+  svg
+    .append("defs")
+    .append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+  var focus = svg
+    .append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var context = svg
+    .append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+  x.domain(
+    d3.extent(data, function (d) {
+      return parseDate(d.date);
+    })
+  );
+  y.domain([
+    0,
+    d3.max(data, function (d) {
+      return +d.total_deaths_per_million;
+    }),
+  ]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+
+  focus.append("path").datum(data).attr("class", "area").attr("d", area);
+
+  focus
+    .append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+  focus.append("g").attr("class", "axis axis--y").call(yAxis);
+
+  context.append("path").datum(data).attr("class", "area").attr("d", area2);
+
+  context
+    .append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height2 + ")")
+    .call(xAxis2);
+
+  context
+    .append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .call(brush.move, x.range());
+
+  svg
+    .append("rect")
+    .attr("class", "zoom")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .call(zoom);
+
+  svg
+    .append("text")
+    .attr("class", "y-label")
+    .attr("x", 0)
+    .attr("y", 80)
+    .attr("transform", "rotate(-90)")
+    .attr("text-anchor", "end")
+    .text("Total Deaths Per Million");
+
+  function brushed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    var s = d3.event.selection || x2.range();
+    x.domain(s.map(x2.invert, x2));
+    focus.select(".area").attr("d", area);
+    focus.select(".axis--x").call(xAxis);
+    svg
+      .select(".zoom")
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.scale(width / (s[1] - s[0])).translate(-s[0], 0)
+      );
+    var svg2 = d3.select("#brush1");
+    svg2
+      .select(".zoom")
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.scale(width / (s[1] - s[0])).translate(-s[0], 0)
+      );
+  }
+
+  function zoomed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    var t = d3.event.transform;
+    x.domain(t.rescaleX(x2).domain());
+    focus.select(".area").attr("d", area);
+    focus.select(".axis--x").call(xAxis);
+    context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+  }
 }

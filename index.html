@@ -17,7 +17,7 @@
   <!-- Color scales lib -->
   <script src="https://d3js.org/d3-color.v2.min.js"></script>
   <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
-  <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script> -->
+  <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script> 
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 
   <link rel="stylesheet" href="globe.css">
@@ -25,18 +25,21 @@
 </head>
 <body>
     <div>
-        <canvas id="globe"></canvas>
+        <div class="globe-container">
         <h1 id="current">World</h1> 
-        <div class="charts">
+        <canvas id="globe"></canvas>
+        </div>
+        <svg width="600" height="350" id="brush1"></svg>
+        <svg width="600" height="350" id="brush2"></svg>
+        <!-- <div class="charts">
         <form>
             <div id="radios">
                 <input type="radio" id="option-one" name="chartSelection" value = "New"><label for="option-one">New</label>
                 <input type="radio" id="option-two" name="chartSelection" value = "Cumulative"><label for="option-two">Cumulative</label>
             </div>
         </form>
-        <svg width = 800 height = 1000></svg>
-        </div>
-        <div id="slider-range" style="width: 50%px; margin-left:10%; margin-right:40%"></div>
+        <svg width = 800 height = 1000 id="svg2"></svg>
+        </div> -->
     </div>
     
     <script src="globe.js"></script>
