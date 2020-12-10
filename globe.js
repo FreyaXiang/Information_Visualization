@@ -751,13 +751,14 @@ function start(totalCasesCountries, data, data2) {
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY - 28 + "px");
         d3.select(this).transition().style("fill", "black");
-        cases.selectAll("point").each(function (d) {
+        deaths.selectAll("point").each(function (d) {
           if (d[3] == date) d3.select(this).transition().style("fill", "black");
         });
       })
       .on("mouseout", function (d) {
         d3.select(this).transition().style("fill", "lightpink");
-        cases.selectAll("point").each(function (d) {
+        div.transition().duration(200).style("opacity", 0);
+        deaths.selectAll("point").each(function (d) {
           d3.select(this).transition().style("fill", "lightpink");
         });
       });
@@ -945,6 +946,25 @@ function start(totalCasesCountries, data, data2) {
       })
       .attr("cy", function (d) {
         return yScale_total_death(d[7]);
+      })
+      .on("mouseover", function (d) {
+        let date = d[3];
+        div.transition().duration(200).style("opacity", 0.8);
+        div
+          .html("Date: " + formatTime(d[3]) + "<br/>" + "Total Deaths: " + d[7])
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+        d3.select(this).transition().style("fill", "black");
+        cases.selectAll("point").each(function (d) {
+          if (d[3] == date) d3.select(this).transition().style("fill", "black");
+        });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition().style("fill", "lightpink");
+        div.transition().duration(200).style("opacity", 0);
+        cases.selectAll("point").each(function (d) {
+          d3.select(this).transition().style("fill", "lightpink");
+        });
       });
 
     var valueline = d3
