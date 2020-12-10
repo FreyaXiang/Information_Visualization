@@ -297,6 +297,7 @@ function start(totalCasesCountries, data, data2) {
 
   function leave(country) {
     current.text("World");
+    div.transition().duration(200).style("opacity", 0);
     document.getElementById("brush1").innerHTML = "";
     document.getElementById("brush2").innerHTML = "";
     drawBrush1(data2, "World");
@@ -1224,10 +1225,15 @@ function drawBrush1(dataUnhandled, country) {
   focus
     .append("g")
     .attr("class", "axis axis--x")
+    .attr("style", "color: white")
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
-  focus.append("g").attr("class", "axis axis--y").call(yAxis);
+  focus
+    .append("g")
+    .attr("class", "axis axis--y")
+    .attr("style", "color: white")
+    .call(yAxis);
 
   context.append("path").datum(data).attr("class", "area").attr("d", area2);
 
@@ -1235,6 +1241,7 @@ function drawBrush1(dataUnhandled, country) {
     .append("g")
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height2 + ")")
+    .attr("style", "color: white")
     .call(xAxis2);
 
   context
@@ -1256,6 +1263,7 @@ function drawBrush1(dataUnhandled, country) {
     .attr("class", "y-label")
     .attr("x", 0)
     .attr("y", 80)
+    .attr("style", "color: white")
     .attr("transform", "rotate(-90)")
     .attr("text-anchor", "end")
     .text("Total Cases Per Million");
@@ -1393,9 +1401,14 @@ function drawBrush2(dataUnhandled, country) {
     .append("g")
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height + ")")
+    .attr("style", "color: white")
     .call(xAxis);
 
-  focus.append("g").attr("class", "axis axis--y").call(yAxis);
+  focus
+    .append("g")
+    .attr("class", "axis axis--y")
+    .attr("style", "color: white")
+    .call(yAxis);
 
   context.append("path").datum(data).attr("class", "area").attr("d", area2);
 
@@ -1403,6 +1416,7 @@ function drawBrush2(dataUnhandled, country) {
     .append("g")
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height2 + ")")
+    .attr("style", "color: white")
     .call(xAxis2);
 
   context
@@ -1421,6 +1435,7 @@ function drawBrush2(dataUnhandled, country) {
 
   svg
     .append("text")
+    .style("color", "white")
     .attr("class", "y-label")
     .attr("x", 0)
     .attr("y", 80)
