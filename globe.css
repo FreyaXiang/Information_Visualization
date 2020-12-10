@@ -1,6 +1,5 @@
 html, body {
     margin: 0;
-    padding: 10px auto;
     background-color: black;
     text-align: center;
 }
@@ -23,14 +22,14 @@ h3 {
   color: white;
   opacity: 0.8;
   font-size: 30px;
-  margin: 0;
+  margin: 10px;
 }
 
 h5{
   color: white;
   opacity: 0.8;
   font-size: 18px;
-  margin: 10px;
+  margin: 10px auto 20px;
 }
 
 .globe-container {
@@ -104,6 +103,7 @@ div.tooltip {
     background-repeat: no-repeat;
     background-size: cover;
     stroke: white;
+    stroke-width: 1px;
   }
   
   .bar {
@@ -111,7 +111,7 @@ div.tooltip {
   }
   
   .point{
-    fill: lightpink;
+    fill: orange;
   }
   
   .line {
@@ -128,30 +128,35 @@ div.tooltip {
   
   
   .x-axis-case {
-    font-style:italic;
+    /* font-style:italic; */
     color: white;
     stroke: white;
+    stroke-width: 1px;
     
   }
   .x-axis-case path{
     stroke: white;
+    stroke-width: 1px;
   }
   .x-axis-death {
-    font-style:italic;
+    /* font-style:italic; */
     color: white;
     stroke: white;
+    stroke-width: 1px;
   }
   .x-axis-death path{
     stroke: white;
+    stroke-width: 1px;
   }
   .y-axis {
-    font-style: italic;
+    /* font-style: italic; */
     color: white;
     stroke: white;
+    stroke-width: 1px;
   }
   
   .y-axis path{
-    stroke-width: 2px;
+    stroke-width: 1px;
     color: white;
   }
   

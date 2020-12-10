@@ -227,8 +227,8 @@ $.ajax({
   success: function (response) {
     data = $.csv.toArrays(response);
     data2 = $.csv.toObjects(response);
-    drawBrush1(data2, "World");
-    drawBrush2(data2, "World");
+    drawBrush3(data2, "World");
+    drawBrush4(data2, "World");
     // total cases and color scale
     var totalCasesCountries = {};
     data.forEach((col) => {
@@ -300,8 +300,8 @@ function start(totalCasesCountries, data, data2) {
     div.transition().duration(200).style("opacity", 0);
     document.getElementById("brush1").innerHTML = "";
     document.getElementById("brush2").innerHTML = "";
-    drawBrush1(data2, "World");
-    drawBrush2(data2, "World");
+    drawBrush3(data2, "World");
+    drawBrush4(data2, "World");
   }
 
   //
@@ -541,12 +541,14 @@ function start(totalCasesCountries, data, data2) {
     enter(c);
     document.getElementById("brush1").innerHTML = "";
     document.getElementById("brush2").innerHTML = "";
-    drawBrush1(data2, getKeyByValue(id, +currentCountry.id));
-    drawBrush2(data2, getKeyByValue(id, +currentCountry.id));
+    drawBrush3(data2, getKeyByValue(id, +currentCountry.id));
+    drawBrush4(data2, getKeyByValue(id, +currentCountry.id));
     console.log(getKeyByValue(id, +currentCountry.id));
     // cases.selectAll("*").remove();
     // deaths.selectAll("*").remove();
     draw_charts(getKeyByValue(id, +currentCountry.id));
+    $("#option-one").prop("checked", true);
+    $("#option-two").prop("checked", false);
   }
 
   function getCountry(event) {
